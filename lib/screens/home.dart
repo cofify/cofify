@@ -1,4 +1,4 @@
-import 'package:cofify/services/auth.dart';
+import 'package:cofify/services/auth_service.dart';
 import 'package:flutter/material.dart';
 
 class HomeView extends StatefulWidget {
@@ -9,7 +9,7 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> {
-  final AuthService _auth = AuthService();
+  final AuthService _auth = AuthService.firebase();
 
   @override
   Widget build(BuildContext context) {
