@@ -1,6 +1,7 @@
 import 'package:cofify/models/user.dart';
-import 'package:cofify/screens/home.dart';
+// import 'package:cofify/screens/home.dart';
 import 'package:cofify/screens/login.dart';
+import 'package:cofify/screens/restaurants.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -13,7 +14,8 @@ class Wrapper extends StatelessWidget {
     if (user.uid == '') {
       return const LoginView();
     } else {
-      return const HomeView();
+      return const RestaurantsView();
+      //return const HomeView();
     }
   }
 }

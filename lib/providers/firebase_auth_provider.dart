@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:cofify/firebase_options.dart';
 import 'package:cofify/models/user.dart';
 import 'package:cofify/providers/auth_provider.dart';
+import 'package:cofify/services/user_database_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -56,6 +57,11 @@ class FirebaseAuthProvider implements AuthProvider {
 
       MyUser? user = currentUser;
       if (user != null) {
+        await DatabaseService(uid: user.uid).updateUserData(
+          gUser.displayName,
+          gUser.email,
+          gUser.photoUrl,
+        );
         return user;
       } else {
         throw Error();
