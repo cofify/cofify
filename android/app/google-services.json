@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "972604251112",
+    "project_id": "cofify-a8db2",
+    "storage_bucket": "cofify-a8db2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:972604251112:android:7a5215ded04b873473a25d",
+        "android_client_info": {
+          "package_name": "com.example.cofify"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "972604251112-l99beecorkvm8eoj81rkjvq06d3p16n3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.cofify",
+            "certificate_hash": "d7615f71497f042c963dad112a97b58c7a49fe2c"
+          }
+        },
+        {
+          "client_id": "972604251112-sd22n0nbikbmt5tsk3mrj4f58oo8cecb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAre0FeWygP4L1FmO5xGxEEUuN2sWJqf7c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "972604251112-b42e53ehkcpl9l25n0btksms1kros5dd.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "972604251112-32be2sehbdk23qteu7snkialhdjr6su0.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.cofify"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
