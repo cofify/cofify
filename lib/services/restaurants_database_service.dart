@@ -1,9 +1,6 @@
-import 'dart:ffi';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cofify/models/restaurants.dart';
 import 'package:cofify/models/review.dart';
-import 'package:flutter/material.dart';
 
 class RestaurantDatabaseService {
   final CollectionReference restaurantsCollection =
