@@ -22,35 +22,38 @@ class _RestaurantsListState extends State<RestaurantsList> {
       body: ListView.builder(
         itemCount: restaurants.length,
         itemBuilder: (context, index) {
-          return Column(
-            children: [
-              FutureBuilder(
-                future: RestaurantStorageService()
-                    .downloadMainImage(restaurants[index].uid),
-                builder: (context, snapshot) {
-                  switch (snapshot.connectionState) {
-                    case ConnectionState.done:
-                      return SizedBox(
-                        width: 300,
-                        height: 300,
-                        child:
-                            snapshot.data ?? const Text('Slika nije ucitana'),
-                      );
-                    // return snapshot.data ?? const Text('Slika nije ucitana');
-                    default:
-                      return const Text('Waithing');
-                  }
-                },
-              ),
-              Text(restaurants[index].name),
-              Text(restaurants[index].description),
-              Text(restaurants[index].workTime[0]),
-              Container(
-                width: MediaQuery.of(context).size.width,
-                height: 1,
-                color: Colors.black,
-              )
-            ],
+          return FutureBuilder(
+            future: RestaurantStorageService()
+                .downloadMainImage(restaurants[index].uid),
+            builder: (context, snapshot) {
+              switch (snapshot.connectionState) {
+                case ConnectionState.done:
+                  return Column(
+                    children: [
+                      snapshot.data ?? const Text('Slika nije ucitana'),
+                      Text(restaurants[index].name),
+                      Text(restaurants[index].location),
+                      Text(restaurants[index].description),
+                      Text(
+                        '${restaurants[index].workTime[0].toDate().hour.toString()}:${restaurants[index].workTime[0].toDate().minute.toString()} - ${restaurants[index].workTime[1].toDate().hour.toString()}:${restaurants[index].workTime[1].toDate().minute.toString()}',
+                      ),
+                      restaurants[index].opened
+                          ? const Text('Otvoreno')
+                          : const Text('Zatvoreno'),
+                      Text(restaurants[index].averageRate.toString()),
+                      const SizedBox(
+                        height: 30,
+                      ),
+                    ],
+                  );
+                case ConnectionState.waiting:
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                default:
+                  return const Text('Waithing');
+              }
+            },
           );
         },
       ),
