@@ -1,3 +1,4 @@
+import 'package:cofify/models/LatLng.dart';
 import 'package:cofify/models/review.dart';
 
 class Restaurant {
@@ -11,6 +12,8 @@ class Restaurant {
   final double averageRate;
   bool isFavourite;
   final String imageURL;
+  final LatLng latlng;
+  final double distance;
 
   Restaurant({
     required this.uid,
@@ -23,5 +26,7 @@ class Restaurant {
     required this.averageRate,
     required this.isFavourite,
     required this.imageURL,
+    required this.latlng,
+    required this.distance,
   });
 }

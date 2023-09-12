@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cofify/models/LatLng.dart';
 import 'package:cofify/models/restaurants.dart';
 import 'package:cofify/models/review.dart';
 import 'package:cofify/services/auth_service.dart';
+import 'package:cofify/services/location_service.dart';
 import 'package:cofify/services/restaurants_storage_service.dart';
 import 'package:cofify/services/user_database_service.dart';
 
@@ -77,6 +79,18 @@ class RestaurantDatabaseService {
       }
       final imageUrl =
           await RestaurantStorageService().downloadMainImage(doc.id);
+
+      GeoPoint geoPoint = doc['latlng'];
+      LatLng? myLocation = await LocationService().getMyLocation();
+      double dist = 0;
+      if (myLocation != null) {
+        dist = LocationService().calculateDistance(
+          geoPoint.latitude,
+          geoPoint.longitude,
+          myLocation.latitude,
+          myLocation.longitude,
+        );
+      }
       restaurants.add(
         Restaurant(
           uid: doc.id,
@@ -91,6 +105,11 @@ class RestaurantDatabaseService {
               ? favouriteBars.contains(doc.id)
               : false,
           imageURL: imageUrl,
+          latlng: LatLng(
+            latitude: geoPoint.latitude,
+            longitude: geoPoint.longitude,
+          ),
+          distance: dist,
         ),
       );
     }

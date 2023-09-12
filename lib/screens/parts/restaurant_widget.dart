@@ -18,15 +18,9 @@ class _RestaurantsListState extends State<RestaurantsList> {
   var selected = 1;
 
   @override
-  void initState() {
-    super.initState();
-    dbService = DatabaseService(uid: authService.currentUser!.uid);
-  }
-
-  @override
   Widget build(BuildContext context) {
     final restaurants = Provider.of<List<Restaurant>>(context);
-
+    dbService = DatabaseService(uid: authService.currentUser!.uid);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Lista Kafica'),
@@ -51,7 +45,8 @@ class _RestaurantsListState extends State<RestaurantsList> {
                 width: 20,
               ),
               ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
+                  //await LocationService().checkAndRequestLocationPermission();
                   setState(() {
                     selected = 2;
                   });
@@ -75,7 +70,7 @@ class _RestaurantsListState extends State<RestaurantsList> {
   Widget AllRestaurantsMethod(List<Restaurant> restaurants) {
     return (restaurants.isNotEmpty)
         ? RestaurantsView(restaurants)
-        : const Text('Nema restorana za prikazivanje');
+        : const Text('Loading');
   }
 
   // ignore: non_constant_identifier_names
@@ -111,6 +106,7 @@ class _RestaurantsListState extends State<RestaurantsList> {
               ),
               Text(restaurant.opened ? 'Otvoreno' : 'Zatvoreno'),
               Text(restaurant.averageRate.toString()),
+              Text("${double.parse(restaurant.distance.toStringAsFixed(1))}m"),
               ElevatedButton(
                 onPressed: () async {
                   if (authService.currentUser!.uid.isNotEmpty) {
