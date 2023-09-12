@@ -9,6 +9,8 @@ class Restaurant {
   final List<dynamic> workTime;
   final List<Review> reviews;
   final double averageRate;
+  bool isFavourite;
+  final String imageURL;
 
   Restaurant({
     required this.uid,
@@ -19,5 +21,7 @@ class Restaurant {
     required this.workTime,
     required this.reviews,
     required this.averageRate,
+    required this.isFavourite,
+    required this.imageURL,
   });
 }
