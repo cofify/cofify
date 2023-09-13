@@ -1,21 +1,19 @@
 import 'package:cofify/models/restaurants.dart';
-import 'package:cofify/screens/parts/box_shadows.dart';
-import 'package:cofify/screens/parts/common_app_bar.dart';
-import 'package:cofify/screens/parts/search_box.dart';
-import 'package:cofify/screens/parts/svg_icon.dart';
+import 'shared_widget_imports.dart';
 import 'package:cofify/services/restaurants_storage_service.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:shimmer/shimmer.dart';
 
-import '../../services/auth_service.dart';
+// import '../../services/auth_service.dart';
 
 class RestaurantsList extends StatelessWidget {
   const RestaurantsList({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final AuthService auth = AuthService.firebase();
+    // final AuthService auth = AuthService.firebase();
     final restaurants = Provider.of<List<Restaurant>>(context);
 
     final double listViewPadding = MediaQuery.of(context).size.width * 0.05;
@@ -41,16 +39,32 @@ class RestaurantsList extends StatelessWidget {
                         .downloadMainImage(restaurants[index].uid),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.done) {
-                        return RestaurantCard(
-                          snapshot: snapshot,
-                          listViewPadding: listViewPadding,
-                          imageHeight: imageHeight,
-                          restaurant: restaurants[index],
+                        if (index == 0) {
+                          return RestaurantCard(
+                            snapshot: snapshot,
+                            listViewPadding: listViewPadding,
+                            imageHeight: imageHeight,
+                            restaurant: restaurants[index],
+                          );
+                        }
+
+                        return Shimmer.fromColors(
+                          baseColor: Colors.grey[300]!,
+                          highlightColor: Colors.grey[500]!,
+                          child: RestaurantLoadingCard(
+                            listViewPadding: listViewPadding,
+                            imageHeight: imageHeight,
+                          ),
                         );
                       } else if (snapshot.connectionState ==
                           ConnectionState.waiting) {
-                        return const Center(
-                          child: CircularProgressIndicator(),
+                        return Shimmer.fromColors(
+                          baseColor: Colors.grey[300]!,
+                          highlightColor: Colors.grey[500]!,
+                          child: RestaurantLoadingCard(
+                            listViewPadding: listViewPadding,
+                            imageHeight: imageHeight,
+                          ),
                         );
                       } else if (snapshot.hasError) {
                         return Text("Error ${snapshot.error}");
@@ -66,6 +80,111 @@ class RestaurantsList extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class RestaurantLoadingCard extends StatelessWidget {
+  final double listViewPadding;
+  final double imageHeight;
+
+  const RestaurantLoadingCard({
+    super.key,
+    required this.listViewPadding,
+    required this.imageHeight,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.only(
+        bottom: 16,
+        left: listViewPadding,
+        right: listViewPadding,
+      ),
+      decoration:
+          BoxDecoration(borderRadius: BorderRadius.circular(16), boxShadow: [
+        BoxShadowsFactory().boxShadowSoft(),
+      ]),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Image
+          ClipRRect(
+            borderRadius: BorderRadius.circular(16),
+            child: Container(
+              height: 200,
+              color: Colors.white,
+            ),
+          ),
+
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Heading
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    ShimmerItem(),
+                    ShimmerItem(width: 22),
+                  ],
+                ),
+
+                SizedBox(height: 4),
+
+                // Location
+                ShimmerItem(width: 130),
+
+                SizedBox(height: 4),
+
+                // Description
+                ShimmerItem(height: 66, expand: true),
+
+                SizedBox(height: 12),
+
+                // Bottom row with info
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    ShimmerItem(width: 70),
+                    ShimmerItem(width: 70),
+                    ShimmerItem(width: 70),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class ShimmerItem extends StatelessWidget {
+  final double height;
+  final double width;
+  final double borderRadius;
+  final bool expand;
+
+  const ShimmerItem({
+    super.key,
+    this.height = 22,
+    this.width = 100,
+    this.borderRadius = 4,
+    this.expand = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(borderRadius),
+      child: Container(
+        height: height,
+        width: (expand) ? null : width,
+        color: Colors.white,
       ),
     );
   }
