@@ -17,11 +17,11 @@ class SearchBox extends StatelessWidget {
   final VoidCallback? function;
 
   /// Provajder koji se koristi pri pretrazi
-  final SearchProvider dataProvider;
+  final SearchProvider? dataProvider;
 
   const SearchBox({
     super.key,
-    required this.dataProvider,
+    this.dataProvider,
     this.withFilters = false,
     this.function,
   });
@@ -40,7 +40,7 @@ class SearchBox extends StatelessWidget {
       ),
       child: TextField(
         onChanged: (value) {
-          dataProvider.updateSearchQuery(value);
+          dataProvider?.updateSearchQuery(value);
         },
         onTapOutside: (event) {
           FocusScope.of(context).unfocus();

@@ -48,6 +48,7 @@ dependencies:
   firebase_storage: ^11.2.6
   http: ^1.1.0
   flutter_svg: ^2.0.7
+  shimmer: ^3.0.0
 
 dev_dependencies:
   flutter_test:
@@ -86,6 +87,16 @@ flutter:
     - assets/icons/EmptyCircle.svg
     - assets/icons/SelectedCircle.svg
     - assets/icons/City.svg
+    - assets/icons/GoogleLogo.svg
+    - assets/icons/GoogleLogoWhite.svg
+    - assets/icons/HeartEmpty.svg
+    - assets/icons/HeartFull.svg
+    - assets/icons/Location.svg
+    - assets/icons/ManWalking.svg
+    - assets/icons/NotActiveDot.svg
+    - assets/icons/ActiveDot.svg
+    - assets/icons/Star.svg
+    
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

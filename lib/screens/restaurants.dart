@@ -5,14 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 
-class RestaurantsView extends StatefulWidget {
+class RestaurantsView extends StatelessWidget {
   const RestaurantsView({super.key});
 
-  @override
-  State<RestaurantsView> createState() => _RestaurantsViewState();
-}
-
-class _RestaurantsViewState extends State<RestaurantsView> {
   @override
   Widget build(BuildContext context) {
     return StreamProvider<List<Restaurant>>.value(
