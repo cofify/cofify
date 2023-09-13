@@ -1,6 +1,7 @@
+import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-class MyUser {
+class MyUser extends ChangeNotifier {
   final String uid;
   MyUser({
     required this.uid,

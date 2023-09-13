@@ -9,6 +9,7 @@ class FatWideButton extends StatelessWidget {
   final Color? color;
   final bool lowImportance;
   final bool showShadow;
+  final bool disabled;
 
   const FatWideButton({
     super.key,
@@ -17,6 +18,7 @@ class FatWideButton extends StatelessWidget {
     this.color,
     this.lowImportance = false,
     this.showShadow = false,
+    this.disabled = false,
   });
 
   @override
@@ -25,7 +27,7 @@ class FatWideButton extends StatelessWidget {
     double containerWidth = screenWidth * 0.9;
 
     return ElevatedButton(
-      onPressed: onPress,
+      onPressed: (disabled) ? null : onPress,
       style: ElevatedButton.styleFrom(
         minimumSize: Size(containerWidth, 0),
         foregroundColor: (lowImportance) ? Colors.black : Colors.white,
@@ -52,6 +54,7 @@ class ThinWideButton extends StatelessWidget {
   final Color? color;
   final bool lowImportance;
   final bool showShadow;
+  final bool disabled;
 
   const ThinWideButton({
     super.key,
@@ -60,6 +63,7 @@ class ThinWideButton extends StatelessWidget {
     this.lowImportance = false,
     this.color,
     this.showShadow = false,
+    this.disabled = false,
   });
 
   @override
@@ -68,7 +72,7 @@ class ThinWideButton extends StatelessWidget {
     double containerWidth = screenWidth * 0.9;
 
     return ElevatedButton(
-      onPressed: onPress,
+      onPressed: (disabled) ? null : onPress,
       style: ElevatedButton.styleFrom(
         minimumSize: Size(containerWidth, 0),
         foregroundColor: (lowImportance) ? Colors.black : Colors.white,
@@ -99,6 +103,7 @@ class RegularButton extends StatelessWidget {
   final Color? color;
   final bool lowImportance;
   final bool showShadow;
+  final bool disabled;
 
   const RegularButton({
     super.key,
@@ -109,12 +114,13 @@ class RegularButton extends StatelessWidget {
     this.icon,
     this.iconSize = 17.0,
     this.showShadow = false,
+    this.disabled = false,
   });
 
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
-      onPressed: onPress,
+      onPressed: (disabled) ? null : onPress,
       style: ElevatedButton.styleFrom(
         // sa lowImportance je sivo dugme sa crnim tekstom,
         // ako nije lowImportance onda roze dugme sa belim tekstom, ili custom boja
@@ -159,6 +165,7 @@ class SmallButton extends StatelessWidget {
   final Color? color;
   final bool lowImportance;
   final bool showShadow;
+  final bool disabled;
 
   const SmallButton({
     super.key,
@@ -167,12 +174,13 @@ class SmallButton extends StatelessWidget {
     this.color,
     this.lowImportance = false,
     this.showShadow = false,
+    this.disabled = false,
   });
 
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
-      onPressed: onPress,
+      onPressed: (disabled) ? null : onPress,
       style: ElevatedButton.styleFrom(
         foregroundColor: (lowImportance) ? Colors.black : Colors.white,
         backgroundColor: (lowImportance)

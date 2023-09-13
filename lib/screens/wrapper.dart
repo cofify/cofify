@@ -1,3 +1,5 @@
+import 'package:cofify/screens/login_screen.dart';
+import 'package:cofify/screens/restaurants.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -8,17 +10,24 @@ import 'package:cofify/screens/login.dart';
 // models
 import 'package:cofify/models/user.dart';
 
+import 'home_old.dart';
+
 class Wrapper extends StatelessWidget {
   const Wrapper({super.key});
 
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<MyUser>(context);
+
+    print("ID:${user.uid}");
+
     if (user.uid == '') {
-      return const LoginView();
-    } else {
+      // return const LoginScreen();
       return const HomePage();
-      //return const HomeView();
+    } else {
+      // return const HomePage();
+      // return const HomeView();
+      return const RestaurantsView();
     }
   }
 }

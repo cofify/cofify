@@ -29,7 +29,7 @@ void main() async {
       ChangeNotifierProvider(create: (_) => PageTracker()),
       ChangeNotifierProvider(create: (_) => ChooseCityDataProvider()),
     ],
-    child: const MyApp(),
+    child: MyApp(),
   ));
 }
 
@@ -57,7 +57,6 @@ class _MyAppState extends State<MyApp> {
         theme: lightTheme,
         darkTheme: darkTheme,
         themeMode: themeManager.themeMode,
-        // home: Wrapper(),
       ),
     );
   }

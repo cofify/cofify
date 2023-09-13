@@ -62,9 +62,14 @@ class ChooseCity extends StatelessWidget {
                   ),
                   child: Center(
                     child: ThinWideButton(
-                      onPress: () {},
+                      onPress: () {
+                        Navigator.of(context).pushNamed('/restaurants');
+                      },
                       buttonText: "Primeni",
                       lowImportance: (searchDataProvider.filteredList.isEmpty)
+                          ? true
+                          : false,
+                      disabled: (searchDataProvider.filteredList.isEmpty)
                           ? true
                           : false,
                     ),
