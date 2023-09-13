@@ -1,10 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cofify/models/latlng.dart';
 import 'package:cofify/models/restaurants.dart';
 import 'package:cofify/models/review.dart';
+import 'package:cofify/services/auth_service.dart';
+import 'package:cofify/services/location_service.dart';
+import 'package:cofify/services/restaurants_storage_service.dart';
+import 'package:cofify/services/user_database_service.dart';
 
 class RestaurantDatabaseService {
   final CollectionReference restaurantsCollection =
       FirebaseFirestore.instance.collection('bars');
+  final AuthService _auth = AuthService.firebase();
 
   // vraca radno vreme
   List<dynamic> _getDaySchedule(Map<String, dynamic> workTimeMap) {
@@ -66,6 +72,25 @@ class RestaurantDatabaseService {
       }
       averageRate /= (reviews.isNotEmpty) ? reviews.length : 1;
 
+      List<String> favouriteBars = List.empty();
+      if (_auth.currentUser!.uid != '') {
+        favouriteBars = await DatabaseService(uid: _auth.currentUser!.uid)
+            .getFavouriteRestourants();
+      }
+      final imageUrl =
+          await RestaurantStorageService().downloadMainImage(doc.id);
+
+      GeoPoint geoPoint = doc['latlng'];
+      LatLng? myLocation = await LocationService().getMyLocation();
+      double dist = 0;
+      if (myLocation != null) {
+        dist = LocationService().calculateDistance(
+          geoPoint.latitude,
+          geoPoint.longitude,
+          myLocation.latitude,
+          myLocation.longitude,
+        );
+      }
       restaurants.add(
         Restaurant(
           uid: doc.id,
@@ -76,6 +101,15 @@ class RestaurantDatabaseService {
           workTime: daySchedule,
           reviews: reviews,
           averageRate: averageRate,
+          isFavourite: (favouriteBars.isNotEmpty)
+              ? favouriteBars.contains(doc.id)
+              : false,
+          imageURL: imageUrl,
+          latlng: LatLng(
+            latitude: geoPoint.latitude,
+            longitude: geoPoint.longitude,
+          ),
+          distance: dist,
         ),
       );
     }

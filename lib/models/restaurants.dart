@@ -1,3 +1,4 @@
+import 'package:cofify/models/latlng.dart';
 import 'package:cofify/models/review.dart';
 
 class Restaurant {
@@ -9,6 +10,10 @@ class Restaurant {
   final List<dynamic> workTime;
   final List<Review> reviews;
   final double averageRate;
+  bool isFavourite;
+  final String imageURL;
+  final LatLng latlng;
+  final double distance;
 
   Restaurant({
     required this.uid,
@@ -19,5 +24,9 @@ class Restaurant {
     required this.workTime,
     required this.reviews,
     required this.averageRate,
+    required this.isFavourite,
+    required this.imageURL,
+    required this.latlng,
+    required this.distance,
   });
 }
