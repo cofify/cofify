@@ -8,18 +8,12 @@ import 'parts/text_divider.dart';
 // other
 import '../services/auth_service.dart';
 
-class LoginScreen extends StatefulWidget {
+class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
-}
-
-class _LoginScreenState extends State<LoginScreen> {
-  final AuthService _auth = AuthService.firebase();
-
-  @override
   Widget build(BuildContext context) {
+    final AuthService auth = AuthService.firebase();
     final double svgIconSize = MediaQuery.of(context).size.width * 0.6;
     final double centerTextSize = MediaQuery.of(context).size.width * 0.5;
 
@@ -33,7 +27,7 @@ class _LoginScreenState extends State<LoginScreen> {
               children: [
                 RegularButton(
                   onPress: () async {
-                    await _auth.signInWithGoogle();
+                    await auth.signInWithGoogle();
                   },
                   buttonText: "Google",
                   icon: "assets/icons/GoogleLogo.svg",
@@ -44,7 +38,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 const SizedBox(height: 20),
                 RegularButton(
                   onPress: () async {
-                    await _auth.signInAnon();
+                    await auth.signInAnon();
                     // Navigator.of(context).pushNamed('/chooseCity');
                   },
                   buttonText: "Nastavite kao gost",
@@ -69,6 +63,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 }
+
 
 // class LoginScreen extends StatelessWidget {
 //   final AuthService _auth = AuthService.firebase();

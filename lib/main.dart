@@ -29,26 +29,20 @@ void main() async {
       ChangeNotifierProvider(create: (_) => PageTracker()),
       ChangeNotifierProvider(create: (_) => ChooseCityDataProvider()),
     ],
-    child: MyApp(),
+    child: const MyApp(),
   ));
 }
 
-class MyApp extends StatefulWidget {
+class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
-  State<MyApp> createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
-  final AuthService _auth = AuthService.firebase();
-
-  @override
   Widget build(BuildContext context) {
+    final AuthService auth = AuthService.firebase();
     final themeManager = Provider.of<ThemeManager>(context);
 
     return StreamProvider<MyUser>.value(
-      value: _auth.user,
+      value: auth.user,
       initialData: MyUser(uid: ''),
       child: MaterialApp(
         initialRoute: '/',

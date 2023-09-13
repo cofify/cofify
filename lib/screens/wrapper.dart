@@ -5,12 +5,9 @@ import 'package:provider/provider.dart';
 
 // widgets
 import 'package:cofify/screens/home.dart';
-import 'package:cofify/screens/login.dart';
 
 // models
 import 'package:cofify/models/user.dart';
-
-import 'home_old.dart';
 
 class Wrapper extends StatelessWidget {
   const Wrapper({super.key});
@@ -19,11 +16,9 @@ class Wrapper extends StatelessWidget {
   Widget build(BuildContext context) {
     final user = Provider.of<MyUser>(context);
 
-    print("ID:${user.uid}");
-
     if (user.uid == '') {
-      // return const LoginScreen();
-      return const HomePage();
+      return const LoginScreen();
+      // return const HomePage();
     } else {
       // return const HomePage();
       // return const HomeView();

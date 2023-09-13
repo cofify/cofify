@@ -5,7 +5,6 @@ import 'package:cofify/screens/parts/search_box.dart';
 import 'package:cofify/screens/parts/svg_icon.dart';
 import 'package:cofify/services/restaurants_storage_service.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
@@ -16,6 +15,7 @@ class RestaurantsList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AuthService auth = AuthService.firebase();
     final restaurants = Provider.of<List<Restaurant>>(context);
 
     final double listViewPadding = MediaQuery.of(context).size.width * 0.05;
