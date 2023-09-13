@@ -12,13 +12,14 @@ class RestaurantsView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-        future: LocationService().checkAndRequestLocationPermission(),
-        builder: (context, snapshot) {
-          return StreamProvider<List<Restaurant>>.value(
-            value: RestaurantDatabaseService().restaurants,
-            initialData: const [],
-            child: const RestaurantsList(),
-          );
-        });
+      future: LocationService().checkAndRequestLocationPermission(),
+      builder: (context, snapshot) {
+        return StreamProvider<List<Restaurant>>.value(
+          value: RestaurantDatabaseService().restaurants,
+          initialData: [Restaurant.createDefault()],
+          child: const RestaurantsList(),
+        );
+      },
+    );
   }
 }

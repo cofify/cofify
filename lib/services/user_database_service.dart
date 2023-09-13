@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class DatabaseService {
   final String uid;
@@ -53,5 +54,11 @@ class DatabaseService {
       return value.id;
     }).toList();
     return result;
+  }
+
+  // pamti korisnikov izabrani grad lokalno
+  Future<void> saveCityLocaly(String city) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('city', city);
   }
 }

@@ -1,4 +1,5 @@
 import 'package:cofify/models/user.dart';
+import 'package:cofify/screens/choose_city.dart';
 // import 'package:cofify/screens/home.dart';
 import 'package:cofify/screens/login_screen.dart';
 import 'package:cofify/screens/restaurants_view.dart';
@@ -24,7 +25,8 @@ class Wrapper extends StatelessWidget {
     } else {
       // return const HomePage();
       // return const HomeView();
-      return const RestaurantsView();
+      // return const RestaurantsView();
+      return const ChooseCity();
     }
   }
 }
