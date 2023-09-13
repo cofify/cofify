@@ -50,6 +50,8 @@ dependencies:
   shared_preferences: ^2.2.1
   geolocator: ^10.0.1
   permission_handler: ^11.0.0
+  flutter_svg: ^2.0.7
+  shimmer: ^3.0.0
 
 dev_dependencies:
   flutter_test:
@@ -74,9 +76,30 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
-  #   - images/a_dot_burr.jpeg
-  #   - images/a_dot_ham.jpeg
+  assets:
+  #images
+    - assets/images/DobrodosliUCofify.jpg
+    - assets/images/DobrodosliZena1.jpg
+    - assets/images/DobrodosliZena2.jpg
+    - assets/images/DobrodosliZena3.jpg
+
+  #icons
+    - assets/icons/LoginGirl.svg
+    - assets/icons/SearchIcon.svg
+    - assets/icons/Tune.svg
+    - assets/icons/EmptyCircle.svg
+    - assets/icons/SelectedCircle.svg
+    - assets/icons/City.svg
+    - assets/icons/GoogleLogo.svg
+    - assets/icons/GoogleLogoWhite.svg
+    - assets/icons/HeartEmpty.svg
+    - assets/icons/HeartFull.svg
+    - assets/icons/Location.svg
+    - assets/icons/ManWalking.svg
+    - assets/icons/NotActiveDot.svg
+    - assets/icons/ActiveDot.svg
+    - assets/icons/Star.svg
+    
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

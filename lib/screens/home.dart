@@ -1,29 +1,57 @@
-import 'package:cofify/services/auth_service.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-class HomeView extends StatefulWidget {
-  const HomeView({super.key});
+import 'package:cofify/models/user.dart';
 
-  @override
-  State<HomeView> createState() => _HomeViewState();
-}
+import 'parts/big_heading_text.dart';
+import 'parts/big_paragraph_text.dart';
 
-class _HomeViewState extends State<HomeView> {
-  final AuthService _auth = AuthService.firebase();
+// TODO Razmisli kako ovaj ekran funckionise uopste
+class HomePage extends StatelessWidget {
+  const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    print("Rebuilded Home");
+
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Home'),
-        actions: [
-          IconButton(
-            onPressed: () async {
-              await _auth.signOut();
-            },
-            icon: const Icon(Icons.logout),
+      body: GestureDetector(
+        onTap: () {
+          Navigator.pushNamed(context, '/welcomePages');
+        },
+        child: Center(
+          child: Container(
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height,
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/images/DobrodosliUCofify.jpg'),
+                fit: BoxFit.fill,
+              ),
+            ),
+            child: const Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                BigHeadingText(
+                  widgetText: "Dobrodosli u Cofify",
+                  color: Colors.white,
+                  fontSize: 48,
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                BigParagraphText(
+                  widgetText: "Narucite sta god pozelite uz pomoc jednog klika",
+                  color: Colors.white,
+                  fontSize: 18,
+                ),
+                SizedBox(
+                  height: 60,
+                )
+              ],
+            ),
           ),
-        ],
+        ),
       ),
     );
   }
