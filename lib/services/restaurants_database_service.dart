@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cofify/models/LatLng.dart';
+import 'package:cofify/models/latlng.dart';
 import 'package:cofify/models/restaurants.dart';
 import 'package:cofify/models/review.dart';
 import 'package:cofify/services/auth_service.dart';

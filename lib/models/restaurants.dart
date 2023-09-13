@@ -1,4 +1,4 @@
-import 'package:cofify/models/LatLng.dart';
+import 'package:cofify/models/latlng.dart';
 import 'package:cofify/models/review.dart';
 
 class Restaurant {

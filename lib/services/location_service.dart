@@ -1,5 +1,5 @@
 import 'dart:math';
-import 'package:cofify/models/LatLng.dart';
+import 'package:cofify/models/latlng.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
