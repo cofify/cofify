@@ -4,6 +4,7 @@ import 'package:cofify/services/restaurants_database_service.dart';
 import 'package:cofify/services/user_database_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class RestaurantsList extends StatefulWidget {
   const RestaurantsList({super.key});
@@ -258,7 +259,12 @@ class _RestaurantsListState extends State<RestaurantsList> {
           return Column(
             children: [
               if (restaurant.imageURL.isNotEmpty)
-                Image.network(restaurant.imageURL)
+                CachedNetworkImage(
+                  imageUrl: restaurant.imageURL,
+                  placeholder: (context, url) =>
+                      const CircularProgressIndicator(),
+                  errorWidget: (context, url, error) => const Icon(Icons.error),
+                )
               else
                 const Text('Slika nije ucitana'),
               Text(restaurant.name),
