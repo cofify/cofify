@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-abstract class DotsTrackProvider extends ChangeNotifier {
+abstract class PageTrackProvider extends ChangeNotifier {
   /// Vraca selektovani index
   int get selectedIndex;
 
@@ -8,7 +8,7 @@ abstract class DotsTrackProvider extends ChangeNotifier {
   void setCurrentPage(int pageNumber);
 }
 
-class PageTracker extends DotsTrackProvider {
+class PageTracker extends PageTrackProvider {
   int _selectedIndex = 0;
   final _pageController = PageController();
 

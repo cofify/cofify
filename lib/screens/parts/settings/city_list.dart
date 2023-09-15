@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-import 'shared_widget_imports.dart';
+import '../common/common_widget_imports.dart';
 
 // modles
-import '../../providers/search_provider.dart';
+import '../../../providers/search_provider.dart';
 
 class CityList extends StatelessWidget {
   const CityList({

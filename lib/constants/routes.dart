@@ -5,8 +5,7 @@ import 'package:flutter/material.dart';
 import '../screens/wrapper.dart';
 import '../screens/choose_city.dart';
 import '../screens/welecome_page.dart';
-import '../screens/login_screen.dart';
-import '../screens/restaurants_view.dart';
+import '../screens/restaurants.dart';
 
 Map<String, WidgetBuilder> appRoutes = {
   '/': (context) => const Wrapper(),

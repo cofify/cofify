@@ -5,7 +5,7 @@ import 'svg_icon.dart';
 import 'box_shadows.dart';
 
 // models
-import '../../providers/search_provider.dart';
+import '../../../providers/search_provider.dart';
 
 /// Koristi se za pretragu elementa neke liste
 /// SearchProvider odlucuje koj provajder ce da se koristi u pretrazu

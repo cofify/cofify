@@ -10,7 +10,7 @@ import 'package:cofify/firebase_options.dart';
 import 'package:cofify/models/user.dart';
 import 'package:cofify/services/auth_service.dart';
 
-import 'providers/dots_track_provider.dart';
+import 'providers/page_track_provider.dart';
 import 'providers/search_provider.dart';
 
 // other

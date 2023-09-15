@@ -5,7 +5,7 @@ import 'big_paragraph_text.dart';
 import 'big_heading_text.dart';
 
 // models
-import '../../providers/dots_track_provider.dart';
+import '../../../providers/page_track_provider.dart';
 
 class ScrollablePages extends StatelessWidget {
   const ScrollablePages({

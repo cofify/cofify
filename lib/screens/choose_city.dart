@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 // widgets
-import 'parts/shared_widget_imports.dart';
-import 'parts/city_list.dart';
-import 'parts/result_not_found.dart';
+import 'parts/common/common_widget_imports.dart';
+import 'parts/settings/city_list.dart';
+import 'parts/common/result_not_found.dart';
 
 // models
 import '../providers/search_provider.dart';

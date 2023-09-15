@@ -1,15 +1,13 @@
 import 'package:cofify/models/user.dart';
 // import 'package:cofify/screens/home.dart';
 import 'package:cofify/screens/login_screen.dart';
-import 'package:cofify/screens/restaurants_view.dart';
+import 'package:cofify/screens/restaurants.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 // widgets
-import 'package:cofify/screens/home.dart';
 
 // models
-import 'package:cofify/models/user.dart';
 
 class Wrapper extends StatelessWidget {
   const Wrapper({super.key});

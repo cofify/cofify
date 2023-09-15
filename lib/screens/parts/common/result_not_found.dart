@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 // widgets
-import 'shared_widget_imports.dart';
-import '../../providers/search_provider.dart';
+import 'common_widget_imports.dart';
+import '../../../providers/search_provider.dart';
 
 class ResultNotFound extends StatelessWidget {
   final String icon;

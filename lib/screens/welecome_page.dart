@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'parts/shared_widget_imports.dart';
+import 'parts/common/common_widget_imports.dart';
 
 // widget imports
-import 'parts/dots.dart';
-import 'parts/scrollable_pages.dart';
+import 'parts/common/dots.dart';
+import 'parts/home/scrollable_pages.dart';
 
-import '../providers/dots_track_provider.dart';
+import '../providers/page_track_provider.dart';
 
 class WelecomePage extends StatelessWidget {
   const WelecomePage({super.key});
