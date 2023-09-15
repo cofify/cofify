@@ -1,5 +1,6 @@
 import 'package:cofify/screens/parts/restaurant/restaurant_card.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -45,7 +46,7 @@ class MyNestedScrollView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final restaurants = Provider.of<List<Restaurant>>(context);
-    final pageController = Provider.of<PageTracker>(context);
+    final pageController = Provider.of<PillButtonPageTracker>(context);
 
     return NestedScrollView(
       headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
@@ -58,27 +59,9 @@ class MyNestedScrollView extends StatelessWidget {
             flexibleSpace: Column(
               children: [
                 const SizedBox(height: 20.0),
-                const SearchBox(),
+                const SearchBox(withFilters: true),
                 const SizedBox(height: 20.0),
-                Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    SmallButton(
-                      onPress: () {
-                        pageController.setCurrentPage(0);
-                      },
-                      buttonText: "Svi",
-                    ),
-                    Positioned(
-                      child: SmallButton(
-                        onPress: () {
-                          pageController.setCurrentPage(1);
-                        },
-                        buttonText: "Omiljeni",
-                      ),
-                    )
-                  ],
-                ),
+                PillButtons(pageController: pageController),
               ],
             ),
           ),
@@ -87,10 +70,92 @@ class MyNestedScrollView extends StatelessWidget {
       body: PageView(
         controller: pageController.pageController,
         children: [
-          AllRestaurants(restaurants: restaurants),
           FavouriteRestourants(allRestaurants: restaurants),
+          AllRestaurants(restaurants: restaurants),
         ],
       ),
+    );
+  }
+}
+
+class PillButtons extends StatelessWidget {
+  final PillButtonPageTracker pageController;
+
+  const PillButtons({
+    super.key,
+    required this.pageController,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        Container(
+          width: 240,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            boxShadow: [BoxShadowsFactory().boxShadowSoft()],
+            borderRadius: BorderRadius.circular(50),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              InkWell(
+                onTap: () {
+                  pageController.setCurrentPage(0);
+                },
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 0, vertical: 12),
+                  width: 120,
+                  alignment: Alignment.center,
+                  child: const Text(
+                    "Omiljeni",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+              InkWell(
+                onTap: () {
+                  pageController.setCurrentPage(1);
+                },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 0,
+                    vertical: 16,
+                  ),
+                  width: 120,
+                  alignment: Alignment.center,
+                  child: const Text(
+                    "Svi",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              )
+            ],
+          ),
+        ),
+        AnimatedPositioned(
+          duration: const Duration(milliseconds: 150),
+          curve: Curves.easeInOut,
+          left: (pageController.selectedIndex == 0) ? 0 : 120,
+          child: Container(
+            width: 120,
+            height: 53,
+            decoration: BoxDecoration(
+              color: Theme.of(context).primaryColor,
+              borderRadius: BorderRadius.circular(50),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

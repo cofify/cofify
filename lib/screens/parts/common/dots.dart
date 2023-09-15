@@ -13,7 +13,7 @@ class Dots extends StatelessWidget {
   final double activeDotSize;
 
   /// Prosledi provajdera kog ce widget da koristi
-  final PageTrackProvider dotsTrackProvider;
+  final PageTrackProviders dotsTrackProvider;
 
   const Dots({
     super.key,

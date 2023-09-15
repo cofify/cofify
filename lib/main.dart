@@ -27,6 +27,7 @@ void main() async {
     providers: [
       ChangeNotifierProvider(create: (_) => ThemeManager()),
       ChangeNotifierProvider(create: (_) => PageTracker()),
+      ChangeNotifierProvider(create: (_) => PillButtonPageTracker()),
       ChangeNotifierProvider(create: (_) => ChooseCityDataProvider()),
     ],
     child: const MyApp(),
