@@ -8,7 +8,7 @@ class ShimmerItem extends StatelessWidget {
 
   const ShimmerItem({
     super.key,
-    this.height = 22,
+    this.height = 18,
     this.width = 100,
     this.borderRadius = 4,
     this.expand = false,

@@ -34,7 +34,6 @@ class _RestaurantsListState extends State<RestaurantsList> {
     dbService = DatabaseService(uid: authService.currentUser!.uid);
 
     return const Scaffold(
-      appBar: CommonAppBar(text: "Lista Kafica"),
       body: MyNestedScrollView(),
     );
   }
@@ -48,31 +47,33 @@ class MyNestedScrollView extends StatelessWidget {
     final restaurants = Provider.of<List<Restaurant>>(context);
     final pageController = Provider.of<PillButtonPageTracker>(context);
 
-    return NestedScrollView(
-      headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-        return [
-          SliverAppBar(
-            backgroundColor: Colors.grey[50],
-            toolbarHeight: 200,
-            floating: true,
-            snap: true,
-            flexibleSpace: Column(
-              children: [
-                const SizedBox(height: 20.0),
-                const SearchBox(withFilters: true),
-                const SizedBox(height: 20.0),
-                PillButtons(pageController: pageController),
-              ],
+    return SafeArea(
+      child: NestedScrollView(
+        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+          return [
+            SliverAppBar(
+              backgroundColor: Colors.grey[50],
+              toolbarHeight: 180,
+              floating: true,
+              snap: true,
+              flexibleSpace: Column(
+                children: [
+                  const SizedBox(height: 20.0),
+                  const SearchBox(withFilters: true),
+                  const SizedBox(height: 20.0),
+                  PillButtons(pageController: pageController),
+                ],
+              ),
             ),
-          ),
-        ];
-      },
-      body: PageView(
-        controller: pageController.pageController,
-        children: [
-          FavouriteRestourants(allRestaurants: restaurants),
-          AllRestaurants(restaurants: restaurants),
-        ],
+          ];
+        },
+        body: PageView(
+          controller: pageController.pageController,
+          children: [
+            FavouriteRestourants(allRestaurants: restaurants),
+            AllRestaurants(restaurants: restaurants),
+          ],
+        ),
       ),
     );
   }
@@ -215,10 +216,13 @@ class RestaurantsView extends StatelessWidget {
     return ListView.builder(
       itemCount: restaurants.length,
       itemBuilder: (context, index) {
-        return RestaurantCard(
-          listViewPadding: listViewPadding,
-          imageHeight: imageHeight,
-          restaurant: restaurants[index],
+        return Padding(
+          padding: EdgeInsets.only(top: (index == 0) ? 20.0 : 0),
+          child: RestaurantCard(
+            listViewPadding: listViewPadding,
+            imageHeight: imageHeight,
+            restaurant: restaurants[index],
+          ),
         );
       },
     );
@@ -236,14 +240,28 @@ class LoadingRestaurantsView extends StatelessWidget {
     return ListView.builder(
       itemCount: 20,
       itemBuilder: (context, index) {
-        return Container(
-          color: Colors.white,
-          child: Shimmer.fromColors(
-            baseColor: Colors.grey[200]!,
-            highlightColor: Colors.grey[400]!,
-            child: RestaurantLoadingCard(
-              imageHeight: imageHeight,
-              listViewPadding: listViewPadding,
+        return Padding(
+          padding: EdgeInsets.only(top: (index == 0) ? 20.0 : 0),
+          child: Container(
+            margin: EdgeInsets.only(
+              bottom: 16,
+              left: listViewPadding,
+              right: listViewPadding,
+            ),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadowsFactory().boxShadowSoft(),
+              ],
+            ),
+            child: Shimmer.fromColors(
+              baseColor: Colors.grey[100]!,
+              highlightColor: Colors.grey[300]!,
+              child: RestaurantLoadingCard(
+                imageHeight: imageHeight,
+                listViewPadding: listViewPadding,
+              ),
             ),
           ),
         );

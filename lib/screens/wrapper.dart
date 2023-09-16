@@ -1,7 +1,7 @@
 import 'package:cofify/models/user.dart';
 // import 'package:cofify/screens/home.dart';
-import 'package:cofify/screens/login_screen.dart';
-import 'package:cofify/screens/restaurants.dart';
+import 'package:cofify/screens/login_page.dart';
+import 'package:cofify/screens/restaurants_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

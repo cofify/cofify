@@ -45,11 +45,12 @@ class _RestaurantCardState extends State<RestaurantCard> {
         right: widget.listViewPadding,
       ),
       decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadowsFactory().boxShadowSoft(),
-          ]),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadowsFactory().boxShadowSoft(),
+        ],
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
