@@ -17,22 +17,12 @@ import '../../providers/page_track_provider.dart';
 import 'common/common_widget_imports.dart';
 import 'restaurant/restaurant_loading_card.dart';
 
-class RestaurantsList extends StatefulWidget {
-  const RestaurantsList({super.key});
-
-  @override
-  State<RestaurantsList> createState() => _RestaurantsListState();
-}
-
-class _RestaurantsListState extends State<RestaurantsList> {
-  final authService = AuthService.firebase();
+class RestaurantList extends StatelessWidget {
+  const RestaurantList({super.key});
   // ignore: prefer_typing_uninitialized_variables
-  var dbService;
 
   @override
   Widget build(BuildContext context) {
-    dbService = DatabaseService(uid: authService.currentUser!.uid);
-
     return const Scaffold(
       body: MyNestedScrollView(),
     );
@@ -47,19 +37,41 @@ class MyNestedScrollView extends StatelessWidget {
     final restaurants = Provider.of<List<Restaurant>>(context);
     final pageController = Provider.of<PillButtonPageTracker>(context);
 
+    final authService = AuthService.firebase();
+    DatabaseService dbService =
+        DatabaseService(uid: authService.currentUser!.uid);
+
     return SafeArea(
       child: NestedScrollView(
         headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
           return [
             SliverAppBar(
               backgroundColor: Colors.grey[50],
-              toolbarHeight: 180,
+              toolbarHeight: 170,
               floating: true,
               snap: true,
               flexibleSpace: Column(
                 children: [
                   const SizedBox(height: 20.0),
-                  const SearchBox(withFilters: true),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const SearchBox(
+                        withFilters: true,
+                        widthPercentage: 0.7,
+                      ),
+                      const SizedBox(width: 15),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.of(context).pushNamed('/account');
+                        },
+                        child: const Hero(
+                          tag: 'restaurant-settings-UserAvatar',
+                          child: UserAvatar(),
+                        ),
+                      )
+                    ],
+                  ),
                   const SizedBox(height: 20.0),
                   PillButtons(pageController: pageController),
                 ],
@@ -70,8 +82,8 @@ class MyNestedScrollView extends StatelessWidget {
         body: PageView(
           controller: pageController.pageController,
           children: [
-            FavouriteRestourants(allRestaurants: restaurants),
-            AllRestaurants(restaurants: restaurants),
+            FavouriteRestourantsWrapper(allRestaurants: restaurants),
+            AllRestaurantsWrapper(restaurants: restaurants),
           ],
         ),
       ),
@@ -161,10 +173,10 @@ class PillButtons extends StatelessWidget {
   }
 }
 
-class AllRestaurants extends StatelessWidget {
+class AllRestaurantsWrapper extends StatelessWidget {
   final List<Restaurant> restaurants;
 
-  const AllRestaurants({
+  const AllRestaurantsWrapper({
     super.key,
     required this.restaurants,
   });
@@ -177,10 +189,10 @@ class AllRestaurants extends StatelessWidget {
   }
 }
 
-class FavouriteRestourants extends StatelessWidget {
+class FavouriteRestourantsWrapper extends StatelessWidget {
   final List<Restaurant> allRestaurants;
 
-  const FavouriteRestourants({
+  const FavouriteRestourantsWrapper({
     super.key,
     required this.allRestaurants,
   });

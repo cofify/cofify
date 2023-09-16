@@ -36,12 +36,12 @@ class ScrollablePages extends StatelessWidget {
                 ),
               ),
               const BigHeadingText(
-                widgetText: 'Najbrzi nacin da narucite sta god pozelite',
+                widgetText: 'Dobrodosli u Cofify',
                 customWidgetWidthPercentage: 0.85,
               ),
               const BigParagraphText(
                 widgetText:
-                    "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard",
+                    "Pronadjite hranu koju volite, porucite ono sto zelite sa jednim klikom, i uzivajte u hrani spremnoj za samo par minuta.",
                 customWidgetWidthPercentage: 0.85,
               ),
             ],
@@ -60,12 +60,12 @@ class ScrollablePages extends StatelessWidget {
                 ),
               ),
               const BigHeadingText(
-                widgetText: 'Naruci bilo sta samo jednim klikom',
+                widgetText: 'Najbrzi nacin da narucite sta god pozelite',
                 customWidgetWidthPercentage: 0.85,
               ),
               const BigParagraphText(
                 widgetText:
-                    "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard",
+                    "Zaboravite na bespotrebno cekanje prilikom porucivanja. Cofify Vam omogucava da narucite direktno iz restorana, bez dodatnog cekanja na konobare.",
                 customWidgetWidthPercentage: 0.85,
               ),
             ],
@@ -90,7 +90,7 @@ class ScrollablePages extends StatelessWidget {
               ),
               const BigParagraphText(
                 widgetText:
-                    "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard",
+                    "Budite uvek u toku sa svim novostima vezanih za Vas omiljeni kafic. Pratite akcije, popuste, kao i ostale pogodnosti, sve sa jednog mesta.",
                 customWidgetWidthPercentage: 0.85,
               ),
             ],

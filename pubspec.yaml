@@ -99,6 +99,10 @@ flutter:
     - assets/icons/NotActiveDot.svg
     - assets/icons/ActiveDot.svg
     - assets/icons/Star.svg
+    - assets/icons/AnonimusUser.svg
+    - assets/icons/lunch_dining.svg
+    - assets/icons/settings.svg
+    - assets/icons/switch_account.svg
     
 
   # An image asset can refer to one or more resolution-specific "variants", see

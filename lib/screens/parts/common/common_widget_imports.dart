@@ -7,3 +7,4 @@ export 'search_box.dart';
 export 'app_bar.dart';
 export 'icon_and_text.dart';
 export 'shimmer_item.dart';
+export 'user_avatar.dart';

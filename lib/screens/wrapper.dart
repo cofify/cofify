@@ -1,7 +1,10 @@
 import 'package:cofify/models/user.dart';
+import 'package:cofify/screens/choose_city.dart';
+import 'package:cofify/screens/loadingScreen.dart';
 // import 'package:cofify/screens/home.dart';
 import 'package:cofify/screens/login_page.dart';
 import 'package:cofify/screens/restaurants_page.dart';
+import 'package:cofify/screens/welecome_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -17,12 +20,22 @@ class Wrapper extends StatelessWidget {
     final user = Provider.of<MyUser>(context);
 
     if (user.uid == '') {
-      return const LoginScreen();
-      // return const HomePage();
+      if (Navigator.of(context).canPop()) {
+        Navigator.of(context).pop();
+      }
+
+      return const WelecomePage();
+      // return const LoginScreen();
     } else {
-      // return const HomePage();
+      // return const LoadingScreen();
       // return const HomeView();
-      return const RestaurantsView();
+
+      // Clear all routes from the stack
+      if (Navigator.of(context).canPop()) {
+        Navigator.of(context).pop();
+      }
+      return const ChooseCity();
+      // return const RestaurantsPage();
     }
   }
 }
