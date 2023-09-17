@@ -1,3 +1,5 @@
+// ignore_for_file: unused_import
+
 import 'package:cofify/models/user.dart';
 import 'package:cofify/screens/choose_city.dart';
 import 'package:cofify/screens/loadingScreen.dart';

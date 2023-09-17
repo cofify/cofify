@@ -1,4 +1,6 @@
-<svg width="25" height="25" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path fill-rule="evenodd" clip-rule="evenodd" d="M12.5 25C19.4036 25 25 19.4036 25 12.5C25 5.59644 19.4036 0 12.5 0C5.59644 0 0 5.59644 0 12.5C0 19.4036 5.59644 25 12.5 25ZM12.5 21C17.1944 21 21 17.1944 21 12.5C21 7.80558 17.1944 4 12.5 4C7.80558 4 4 7.80558 4 12.5C4 17.1944 7.80558 21 12.5 21Z" fill="#E0115F"/>
-<circle cx="12.5" cy="12.5" r="5.5" fill="#E0115F"/>
+<svg width="25" height="25" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="15" cy="15" r="12.5" stroke="#E0115F" stroke-width="5"/>
+    <circle cx="15" cy="15" r="6" fill="#E0115F">
+        <animate attributeName="r" from="0" to="6" dur="0.15s" begin="0s" fill="freeze" />
+    </circle>
 </svg>

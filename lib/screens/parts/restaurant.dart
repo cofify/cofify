@@ -1,6 +1,5 @@
 import 'package:cofify/screens/parts/restaurant/restaurant_card.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 
