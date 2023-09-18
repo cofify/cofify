@@ -21,7 +21,6 @@ class WelecomePage extends StatelessWidget {
           child: Stack(
             children: <Widget>[
               const ScrollablePages(),
-
               // bottom item
               Positioned(
                 bottom: 0,

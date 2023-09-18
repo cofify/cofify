@@ -5,7 +5,7 @@ import 'package:cofify/screens/choose_city.dart';
 import 'package:cofify/screens/loadingScreen.dart';
 // import 'package:cofify/screens/home.dart';
 import 'package:cofify/screens/login_page.dart';
-import 'package:cofify/screens/restaurants_page.dart';
+import 'package:cofify/screens/restaurants_list_page.dart';
 import 'package:cofify/screens/welecome_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -36,8 +36,7 @@ class Wrapper extends StatelessWidget {
       if (Navigator.of(context).canPop()) {
         Navigator.of(context).pop();
       }
-      return const ChooseCity();
-      // return const RestaurantsPage();
+      return const RestaurantsListPage();
     }
   }
 }

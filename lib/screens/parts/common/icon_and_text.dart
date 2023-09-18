@@ -38,7 +38,7 @@ class IconAndText extends StatelessWidget {
       textBaseline: textBaseline,
       children: (iconFirst)
           ? [
-              GestureDetector(
+              InkWell(
                 onTap: iconAction,
                 child: SvgIcon(
                   icon: icon,

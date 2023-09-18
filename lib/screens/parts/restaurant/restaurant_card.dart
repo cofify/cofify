@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import 'package:cofify/models/restaurant_route_data.dart';
+import 'package:cofify/util/helper_functions.dart';
+
 // widgets
-import '../../../services/auth_service.dart';
+import '../common/restaurant_card_bottom_row_info.dart';
 import '../common/common_widget_imports.dart';
 import 'restaurant_card_image.dart';
 
@@ -10,6 +13,7 @@ import 'restaurant_card_image.dart';
 import '../../../models/restaurants.dart';
 
 // services
+import '../../../services/auth_service.dart';
 import '../../../services/user_database_service.dart';
 
 class RestaurantCard extends StatefulWidget {
@@ -38,142 +42,122 @@ class _RestaurantCardState extends State<RestaurantCard> {
 
     var dbService = DatabaseService(uid: authService.currentUser!.uid);
 
-    return Container(
-      margin: EdgeInsets.only(
-        bottom: 16,
-        left: widget.listViewPadding,
-        right: widget.listViewPadding,
-      ),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadowsFactory().boxShadowSoft(),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Image
-          RestaurantCardImage(
-            image: image,
-            imageHeight: widget.imageHeight,
-          ),
+    return InkWell(
+      onTap: () {
+        // Navigator.of(context).pushNamed(
+        //   '/restaurant',
+        //   arguments: RestaurantRouteData(
+        //     uid: widget.restaurant.uid,
+        //     image: image,
+        //   ),
+        // );
+        Navigator.of(context).pushNamed(
+          '/restaurant',
+          arguments: widget.restaurant,
+        );
+      },
+      child: Container(
+        margin: EdgeInsets.only(
+          bottom: 16,
+          left: widget.listViewPadding,
+          right: widget.listViewPadding,
+        ),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadowsFactory().boxShadowSoft(),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Image
+            RestaurantCardImage(
+              image: image,
+              imageHeight: widget.imageHeight,
+              opened: widget.restaurant.opened,
+            ),
 
-          Padding(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
-            child: Column(
-              children: [
-                // Heading
-                IconAndText(
-                  text: widget.restaurant.name,
-                  icon: widget.restaurant.isFavourite
-                      ? "assets/icons/HeartFull.svg"
-                      : "assets/icons/HeartEmpty.svg",
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.baseline,
-                  textBaseline: TextBaseline.alphabetic,
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                  iconFirst: false,
-                  iconAction: () async {
-                    if (authService.currentUser!.uid.isNotEmpty) {
-                      if (widget.restaurant.isFavourite) {
-                        await dbService.removeRestaurantFromFavourite(
-                            widget.restaurant.uid);
-                      } else {
-                        await dbService
-                            .addRestourantToFavourite(widget.restaurant.uid);
-                      }
-                      setState(() {
-                        widget.restaurant.isFavourite =
-                            !widget.restaurant.isFavourite;
-                      });
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text(
-                              'Morate biti prijavljeni da bi dodali restoran u omiljene'),
+            Hero(
+              tag: "restaurantlist-restaurant-hero${widget.restaurant.uid}",
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 20.0, vertical: 12.0),
+                child: Material(
+                  color: Colors.transparent,
+                  child: Column(
+                    children: [
+                      // Heading
+                      IconAndText(
+                        text: widget.restaurant.name,
+                        icon: widget.restaurant.isFavourite
+                            ? "assets/icons/HeartFull.svg"
+                            : "assets/icons/HeartEmpty.svg",
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.baseline,
+                        textBaseline: TextBaseline.alphabetic,
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        iconFirst: false,
+                        iconAction: () async {
+                          if (authService.currentUser!.uid.isNotEmpty) {
+                            if (widget.restaurant.isFavourite) {
+                              await dbService.removeRestaurantFromFavourite(
+                                  widget.restaurant.uid);
+                            } else {
+                              await dbService.addRestourantToFavourite(
+                                  widget.restaurant.uid);
+                            }
+                            setState(() {
+                              widget.restaurant.isFavourite =
+                                  !widget.restaurant.isFavourite;
+                            });
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                    'Morate biti prijavljeni da bi dodali restoran u omiljene'),
+                              ),
+                            );
+                          }
+                        },
+                      ),
+
+                      const SizedBox(height: 4),
+
+                      // Location
+                      IconAndText(
+                        text: widget.restaurant.location,
+                        fontSize: 18.0,
+                        icon: "assets/icons/Location.svg",
+                        iconSize: 18.0,
+                        iconAction: () {},
+                      ),
+
+                      const SizedBox(height: 4),
+
+                      // Description
+                      Text(
+                        widget.restaurant.description,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          color: Color(0xFFADA4A6),
                         ),
-                      );
-                    }
-                  },
-                ),
+                      ),
 
-                const SizedBox(height: 4),
+                      const SizedBox(height: 12),
 
-                // Location
-                IconAndText(
-                  text: widget.restaurant.location,
-                  fontSize: 18.0,
-                  icon: "assets/icons/Location.svg",
-                  iconSize: 18.0,
-                  iconAction: () {},
-                ),
-
-                const SizedBox(height: 4),
-
-                // Description
-                Text(
-                  widget.restaurant.description,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    color: Color(0xFFADA4A6),
+                      // Bottom row with info
+                      RestaurantCardBottomRowInfo(
+                          restaurant: widget.restaurant),
+                    ],
                   ),
                 ),
-
-                const SizedBox(height: 12),
-
-                // Bottom row with info
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    // Distance
-                    IconAndText(
-                      text: (widget.restaurant.workTime.isEmpty)
-                          ? "Nepoznato"
-                          : '${widget.restaurant.workTime[0].toDate().hour.toString()}:${widget.restaurant.workTime[0].toDate().minute.toString()} - ${widget.restaurant.workTime[1].toDate().hour.toString()}:${widget.restaurant.workTime[1].toDate().minute.toString()}',
-                      icon: "assets/icons/ManWalking.svg",
-                      fontSize: 16,
-                      iconSize: 16,
-                      iconAction: () {},
-                    ),
-
-                    // Open
-                    IconAndText(
-                      text: (widget.restaurant.workTime.isEmpty == false)
-                          ? widget.restaurant.opened
-                              ? DateFormat('HH:mm').format(
-                                  widget.restaurant.workTime[1].toDate(),
-                                )
-                              : DateFormat('HH:mm').format(
-                                  widget.restaurant.workTime[0].toDate(),
-                                )
-                          : "Nepoznato",
-                      icon: widget.restaurant.opened
-                          ? "assets/icons/ActiveDot.svg"
-                          : "assets/icons/NotActiveDot.svg",
-                      iconSize: 7,
-                      fontSize: 16,
-                      iconAction: () {},
-                    ),
-
-                    // Rating
-                    IconAndText(
-                      text: widget.restaurant.averageRate.toString(),
-                      icon: 'assets/icons/Star.svg',
-                      fontSize: 16,
-                      iconSize: 16,
-                      iconAction: () {},
-                    ),
-                  ],
-                ),
-              ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

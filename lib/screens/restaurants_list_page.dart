@@ -6,8 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 
-class RestaurantsPage extends StatelessWidget {
-  const RestaurantsPage({super.key});
+class RestaurantsListPage extends StatelessWidget {
+  const RestaurantsListPage({super.key});
 
   @override
   Widget build(BuildContext context) {
