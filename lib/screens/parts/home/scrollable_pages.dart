@@ -19,7 +19,7 @@ class ScrollablePages extends StatelessWidget {
     return PageView(
       controller: pageNumberTrack.pageController,
       onPageChanged: (int pageNumber) {
-        pageNumberTrack.setCurrentPage(pageNumber);
+        pageNumberTrack.setCurrentPageDontNotifySelf(pageNumber);
       },
       scrollDirection: Axis.horizontal,
       children: [

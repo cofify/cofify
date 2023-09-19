@@ -6,6 +6,7 @@ abstract class PageTrackProviders extends ChangeNotifier {
 
   /// Postavi predji na odredjenu tacku
   void setCurrentPage(int pageNumber);
+  void setCurrentPageDontNotifySelf(int pageNumber);
 }
 
 class PageTracker extends PageTrackProviders {
@@ -19,15 +20,26 @@ class PageTracker extends PageTrackProviders {
 
   @override
   setCurrentPage(int pageNumber) {
+    if (_selectedIndex == pageNumber) return;
     _selectedIndex = pageNumber;
     _animateToPage(_selectedIndex);
     notifyListeners();
   }
 
+  @override
+  setCurrentPageDontNotifySelf(int pageNumber) {
+    if (_selectedIndex == pageNumber) return;
+    _selectedIndex = pageNumber;
+    notifyListeners();
+  }
+
   // inner methods
   _animateToPage(int pageNumber) {
-    _pageController.animateToPage(_selectedIndex,
-        duration: const Duration(milliseconds: 200), curve: Curves.easeInOut);
+    _pageController.animateToPage(
+      _selectedIndex,
+      duration: const Duration(milliseconds: 200),
+      curve: Curves.easeInOut,
+    );
   }
 }
 
@@ -42,8 +54,16 @@ class PillButtonPageTracker extends PageTrackProviders {
 
   @override
   setCurrentPage(int pageNumber) {
+    if (_selectedIndex == pageNumber) return;
     _selectedIndex = pageNumber;
     _animateToPage(_selectedIndex);
+    notifyListeners();
+  }
+
+  @override
+  setCurrentPageDontNotifySelf(int pageNumber) {
+    if (_selectedIndex == pageNumber) return;
+    _selectedIndex = pageNumber;
     notifyListeners();
   }
 

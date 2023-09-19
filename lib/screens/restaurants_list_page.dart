@@ -1,5 +1,5 @@
 import 'package:cofify/models/restaurants.dart';
-import 'package:cofify/screens/parts/restaurant.dart';
+import 'package:cofify/screens/parts/restaurant/restaurant_list.dart';
 import 'package:cofify/services/location_service.dart';
 import 'package:cofify/services/restaurants_database_service.dart';
 import 'package:flutter/material.dart';

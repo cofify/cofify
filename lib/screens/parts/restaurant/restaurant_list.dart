@@ -12,9 +12,9 @@ import 'package:cofify/models/restaurants.dart';
 import 'package:cofify/services/auth_service.dart';
 import 'package:cofify/services/user_database_service.dart';
 
-import '../../providers/page_track_provider.dart';
-import 'common/common_widget_imports.dart';
-import 'restaurant/restaurant_loading_card.dart';
+import '../../../providers/page_track_provider.dart';
+import '../common/common_widget_imports.dart';
+import 'restaurant_loading_card.dart';
 
 class RestaurantList extends StatelessWidget {
   const RestaurantList({super.key});
@@ -71,7 +71,7 @@ class RestaurantList extends StatelessWidget {
           body: PageView(
             controller: pageController.pageController,
             onPageChanged: (int numPage) {
-              pageController.setCurrentPage(numPage);
+              pageController.setCurrentPageDontNotifySelf(numPage);
             },
             scrollDirection: Axis.horizontal,
             children: [
