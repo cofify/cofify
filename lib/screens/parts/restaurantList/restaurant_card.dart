@@ -79,11 +79,11 @@ class _RestaurantCardState extends State<RestaurantCard> {
               opened: widget.restaurant.opened,
             ),
 
-            Hero(
-              tag: "restaurantlist-restaurant-hero${widget.restaurant.uid}",
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 20.0, vertical: 12.0),
+            Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
+              child: Hero(
+                tag: "restaurantlist-restaurant-hero${widget.restaurant.uid}",
                 child: Material(
                   color: Colors.transparent,
                   child: Column(

@@ -1,5 +1,5 @@
 import 'package:cofify/models/restaurants.dart';
-import 'package:cofify/screens/parts/restaurant/restaurant_list.dart';
+import 'package:cofify/screens/parts/restaurantList/restaurant_list.dart';
 import 'package:cofify/services/location_service.dart';
 import 'package:cofify/services/restaurants_database_service.dart';
 import 'package:flutter/material.dart';
@@ -17,7 +17,7 @@ class RestaurantsListPage extends StatelessWidget {
         return StreamProvider<List<Restaurant>>.value(
           value: RestaurantDatabaseService().restaurants,
           initialData: const [],
-          child: const RestaurantList(),
+          child: RestaurantList(),
         );
       },
     );

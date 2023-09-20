@@ -114,8 +114,6 @@ class RestaurantPage extends StatelessWidget {
                               ),
                             ),
                           ),
-
-                          // Description
                         ],
                       ),
                     ),
