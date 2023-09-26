@@ -11,7 +11,7 @@ class RestaurantStorageService {
       final url = await reference.getDownloadURL();
       return url;
     } catch (e) {
-      throw Error();
+      return "";
     }
   }
 }

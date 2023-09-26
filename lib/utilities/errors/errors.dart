@@ -1,0 +1,1 @@
+class LoadingRestaurantsException implements Exception {}

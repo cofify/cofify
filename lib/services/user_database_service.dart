@@ -23,6 +23,8 @@ class DatabaseService {
 
   // dodaj restoran kao omiljen
   Future<void> addRestourantToFavourite(String restaurantUID) async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setBool('restartFavouriteRestaurants', true);
     return await userCollection
         .doc(uid)
         .collection('favouriteBars')
@@ -34,6 +36,8 @@ class DatabaseService {
 
   // ukloni restoran iz omiljenih
   Future<void> removeRestaurantFromFavourite(String restaurantUID) async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setBool('restartFavouriteRestaurants', true);
     try {
       await userCollection
           .doc(uid)
