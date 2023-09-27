@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cofify/utilities/errors/errors.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -90,6 +92,17 @@ class RestaurantDatabaseService {
     return dist;
   }
 
+  Future<DocumentSnapshot?> getDocumentSnapshot(String uid) async {
+    try {
+      DocumentSnapshot documentSnapshot =
+          await FirebaseFirestore.instance.collection('bars').doc(uid).get();
+      return documentSnapshot;
+    } catch (e) {
+      log(e.toString());
+      throw Error();
+    }
+  }
+
   // Kreira instancu resorana
   Future<Restaurant> _createRestaurantInstance(
     DocumentSnapshot doc,
@@ -128,16 +141,16 @@ class RestaurantDatabaseService {
     );
   }
 
-  static DocumentSnapshot? documentSnapshot;
   // vraca listu restorana na osnovu prosledjenog query-a
   Future<List<Restaurant>> _getSelectedRestauratns(
-      Query query, int action) async {
+    Query query,
+    int action,
+  ) async {
     final restaurants = <Restaurant>[];
     final snapshot = await query.get();
 
     for (QueryDocumentSnapshot doc in snapshot.docs) {
       restaurants.add(await _createRestaurantInstance(doc));
-      documentSnapshot = doc;
     }
     return restaurants;
   }
@@ -146,6 +159,8 @@ class RestaurantDatabaseService {
   Future<List<Restaurant>> getRestaurants(
     int action,
     bool favourite,
+    DocumentSnapshot? documentSnapshot,
+    int restaurantsPerPage,
   ) async {
     try {
       if (action == -1) {
@@ -153,7 +168,6 @@ class RestaurantDatabaseService {
         return [];
       }
       final userCity = await getSelectedCity();
-      const restaurantsPerPage = 3;
 
       Query query = restaurantsCollection.where(
         'city',
@@ -214,7 +228,7 @@ class RestaurantDatabaseService {
 
       query = query.limit(restaurantsPerPage);
       if (documentSnapshot != null) {
-        query = query.startAfterDocument(documentSnapshot!);
+        query = query.startAfterDocument(documentSnapshot);
       }
       return await _getSelectedRestauratns(query, 1);
     } catch (e) {
@@ -259,9 +273,8 @@ class RestaurantDatabaseService {
 
   // Stream liste restorana
   Stream<List<Restaurant>> get restaurants {
-    documentSnapshot = null;
     return restaurantsCollection.snapshots().asyncMap((snapshot) async {
-      return await getRestaurants(0, false);
+      return await getRestaurants(0, false, null, 3);
     });
   }
 }

@@ -1,5 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cofify/models/restaurants.dart';
 import 'package:cofify/services/auth_service.dart';
+import 'package:cofify/services/location_service.dart';
 import 'package:cofify/services/restaurants_database_service.dart';
 import 'package:cofify/services/user_database_service.dart';
 import 'package:flutter/material.dart';
@@ -21,23 +23,38 @@ class _RestaurantsListState extends State<RestaurantsList> {
   var restaurantDatabaseService = RestaurantDatabaseService();
 
   final ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollControllerFavourite = ScrollController();
 
   List<Restaurant> restaurants = List.empty();
-  List<Restaurant> favouriteRestaurants = List.empty();
+  List<Restaurant> favouriteRestaurants = [];
+  List<String> favRes = [];
 
   bool isLoading = false;
   bool isFinished = false;
+
+  bool isLoadingFavourite = false;
+  bool isFinishedFavourite = false;
+
   int sortAction = 0;
+  bool needRestartFavourite = false;
+
+  DocumentSnapshot? documentSnapshot;
+  DocumentSnapshot? documentSnapshotFavourite;
 
   @override
   void initState() {
     super.initState();
     _scrollController.addListener(_onScroll);
+    _scrollControllerFavourite.addListener(_onScrollFavourite);
     isLoading = false;
     isFinished = false;
+    isLoadingFavourite = false;
+    isFinishedFavourite = false;
     sortAction = 0;
     restaurants = List.empty();
-    favouriteRestaurants = List.empty();
+    favouriteRestaurants = [];
+    documentSnapshot = null;
+    documentSnapshotFavourite = null;
   }
 
   Future<void> _loadData() async {
@@ -45,9 +62,17 @@ class _RestaurantsListState extends State<RestaurantsList> {
       isLoading = true;
       restaurants.clear();
     });
-    await RestaurantDatabaseService().getRestaurants(-1, false);
-    final newRestaurants = await RestaurantDatabaseService()
-        .getRestaurants(sortAction, (selected == 1) ? false : true);
+
+    if (restaurants.isNotEmpty) {
+      documentSnapshot = await RestaurantDatabaseService()
+          .getDocumentSnapshot(restaurants.last.uid);
+    } else {
+      documentSnapshot = null;
+    }
+
+    await RestaurantDatabaseService().getRestaurants(-1, false, null, 0);
+    final newRestaurants = await RestaurantDatabaseService().getRestaurants(
+        sortAction, (selected == 1) ? false : true, documentSnapshot, 3);
 
     if (newRestaurants.isNotEmpty) {
       setState(() {
@@ -68,13 +93,17 @@ class _RestaurantsListState extends State<RestaurantsList> {
                 _scrollController.position.maxScrollExtent * 0.5 &&
         _scrollController.position.pixels <=
             _scrollController.position.maxScrollExtent &&
-        isFinished) {
+        !isFinished) {
       setState(() {
         isLoading = true;
+        needRestartFavourite = true;
       });
 
-      final newRestaurants = await RestaurantDatabaseService()
-          .getRestaurants(sortAction, (selected == 1) ? false : true);
+      documentSnapshot = await RestaurantDatabaseService()
+          .getDocumentSnapshot(restaurants.last.uid);
+
+      final newRestaurants = await RestaurantDatabaseService().getRestaurants(
+          sortAction, (selected == 1) ? false : true, documentSnapshot, 3);
       if (newRestaurants.isNotEmpty) {
         restaurants.addAll(newRestaurants);
         setState(() {
@@ -87,7 +116,160 @@ class _RestaurantsListState extends State<RestaurantsList> {
           isFinished = true;
         });
       }
-      await Future.delayed(const Duration(milliseconds: 300));
+    }
+  }
+
+  Future<void> _onScrollFavourite() async {
+    if (!isLoadingFavourite &&
+        _scrollControllerFavourite.position.pixels >=
+            _scrollControllerFavourite.position.maxScrollExtent -
+                _scrollControllerFavourite.position.maxScrollExtent * 0.5 &&
+        _scrollControllerFavourite.position.pixels <=
+            _scrollControllerFavourite.position.maxScrollExtent + 10 &&
+        !isFinishedFavourite) {
+      setState(() {
+        isLoadingFavourite = true;
+      });
+      if (favRes.isEmpty || needRestartFavourite) {
+        favRes = await dbService.getFavouriteRestourants();
+      }
+
+      documentSnapshotFavourite = await RestaurantDatabaseService()
+          .getDocumentSnapshot(favouriteRestaurants.last.uid);
+
+      if (restaurants.length > favouriteRestaurants.length) {
+        List<Restaurant> newRestaurants = restaurants
+            .where((restaurant) {
+              return favRes.contains(restaurant.uid);
+            })
+            .skipWhile(
+                (restaurant) => restaurant.uid != documentSnapshotFavourite!.id)
+            .skip(1)
+            .take(3)
+            .toList();
+
+        if (newRestaurants.isNotEmpty) {
+          favouriteRestaurants.addAll(newRestaurants);
+          setState(() {
+            isLoadingFavourite = false;
+            isFinishedFavourite = false;
+          });
+        } else {
+          setState(() {
+            isLoadingFavourite = false;
+            isFinishedFavourite = true;
+          });
+        }
+      } else {
+        final newRest = await RestaurantDatabaseService().getRestaurants(
+          sortAction,
+          true,
+          documentSnapshotFavourite,
+          3,
+        );
+        if (newRest.isNotEmpty) {
+          favouriteRestaurants.addAll(newRest);
+          setState(() {
+            isLoadingFavourite = false;
+            isFinishedFavourite = false;
+          });
+        } else {
+          setState(() {
+            isLoadingFavourite = false;
+            isFinishedFavourite = true;
+          });
+        }
+      }
+
+      // final newRestaurants = await RestaurantDatabaseService().getRestaurants(
+      //     sortAction, (selected == 1) ? false : true, documentSnapshot, 3);
+      // if (newRestaurants.isNotEmpty) {
+      //   restaurants.addAll(newRestaurants);
+      //   setState(() {
+      //     isLoading = false;
+      //     isFinished = false;
+      //   });
+      // } else {
+      //   setState(() {
+      //     isLoading = false;
+      //     isFinished = true;
+      //   });
+      // }
+    }
+  }
+
+  Future<void> addDataToFavourite() async {
+    if (sortAction == 0) {
+      if (favouriteRestaurants.isEmpty || needRestartFavourite) {
+        favouriteRestaurants = List.empty();
+        if (favRes.isEmpty || needRestartFavourite) {
+          favRes = await dbService.getFavouriteRestourants();
+        }
+        favouriteRestaurants = restaurants
+            .where((restaurant) {
+              return favRes.contains(restaurant.uid);
+            })
+            .take(3)
+            .toList();
+        needRestartFavourite = false;
+        if (favouriteRestaurants.isNotEmpty) {
+          documentSnapshotFavourite = await RestaurantDatabaseService()
+              .getDocumentSnapshot(favouriteRestaurants.last.uid);
+        } else {
+          documentSnapshotFavourite = null;
+        }
+        if (favouriteRestaurants.length < 3) {
+          final newRest = await RestaurantDatabaseService().getRestaurants(
+            sortAction,
+            true,
+            documentSnapshotFavourite,
+            3 - favouriteRestaurants.length,
+          );
+          if (newRest.isNotEmpty) {
+            favouriteRestaurants.addAll(newRest);
+            setState(() {
+              isLoadingFavourite = false;
+              isFinishedFavourite = false;
+            });
+          } else {
+            setState(() {
+              isLoadingFavourite = false;
+              isFinishedFavourite = true;
+            });
+          }
+        }
+      }
+    } else {
+      if (needRestartFavourite) {
+        favouriteRestaurants = [];
+        if (favRes.isEmpty || needRestartFavourite) {
+          favRes = await dbService.getFavouriteRestourants();
+        }
+        if (favouriteRestaurants.isNotEmpty) {
+          documentSnapshotFavourite = await RestaurantDatabaseService()
+              .getDocumentSnapshot(favouriteRestaurants.last.uid);
+        } else {
+          documentSnapshotFavourite = null;
+        }
+        final newRest = await RestaurantDatabaseService().getRestaurants(
+          sortAction,
+          true,
+          documentSnapshotFavourite,
+          3,
+        );
+        if (newRest.isNotEmpty) {
+          favouriteRestaurants.addAll(newRest);
+          setState(() {
+            isLoadingFavourite = false;
+            isFinishedFavourite = false;
+          });
+        } else {
+          setState(() {
+            isLoadingFavourite = false;
+            isFinishedFavourite = true;
+          });
+        }
+      }
     }
   }
 
@@ -150,10 +332,10 @@ class _RestaurantsListState extends State<RestaurantsList> {
                 ),
                 ElevatedButton(
                   onPressed: () async {
-                    //await LocationService().checkAndRequestLocationPermission();
+                    await LocationService().checkAndRequestLocationPermission();
                     setState(() {
                       selected = 2;
-                      isFinished = false;
+                      isFinishedFavourite = false;
                     });
                     await _loadData();
                   },
@@ -198,7 +380,7 @@ class _RestaurantsListState extends State<RestaurantsList> {
                     selected = 1;
                     isFinished = false;
                   });
-                  await _loadData();
+                  //await _loadData();
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: (selected == 1) ? Colors.red : Colors.blue,
@@ -211,11 +393,12 @@ class _RestaurantsListState extends State<RestaurantsList> {
               ElevatedButton(
                 onPressed: () async {
                   //await LocationService().checkAndRequestLocationPermission();
+                  await addDataToFavourite();
                   setState(() {
                     selected = 2;
-                    isFinished = false;
+                    isFinishedFavourite = false;
                   });
-                  await _loadData();
+                  //await _loadData();
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: (selected != 1) ? Colors.red : Colors.blue,
@@ -224,8 +407,12 @@ class _RestaurantsListState extends State<RestaurantsList> {
               ),
             ],
           ),
-          AllRestaurantsMethod(restaurants),
-          (isLoading) ? const CircularProgressIndicator() : Container(),
+          (selected == 1)
+              ? AllRestaurantsMethod()
+              : FavouriteRestaurantsMethod(),
+          (isLoading && selected == 1 || isLoadingFavourite && selected != 1)
+              ? const CircularProgressIndicator()
+              : Container(),
         ],
       ),
     );
@@ -264,6 +451,7 @@ class _RestaurantsListState extends State<RestaurantsList> {
                                 sortAction = 0;
                                 selected = 1;
                                 isFinished = false;
+                                isFinishedFavourite = false;
                               });
                               Navigator.of(context).pushNamed('/chooseCity');
                             },
@@ -310,8 +498,10 @@ class _RestaurantsListState extends State<RestaurantsList> {
                     setState(() {
                       sortAction = 1;
                       isFinished = false;
+                      isFinishedFavourite = false;
+                      needRestartFavourite = true;
                     });
-                    _loadData();
+                    (selected == 1) ? _loadData() : addDataToFavourite();
                     Navigator.of(context).pop();
                   },
                   child: const Text('Blizini(↑)'),
@@ -325,8 +515,10 @@ class _RestaurantsListState extends State<RestaurantsList> {
                     setState(() {
                       sortAction = 2;
                       isFinished = false;
+                      isFinishedFavourite = false;
+                      needRestartFavourite = true;
                     });
-                    _loadData();
+                    (selected == 1) ? _loadData() : addDataToFavourite();
                     Navigator.of(context).pop();
                   },
                   child: const Text('Blizini(↓)'),
@@ -344,8 +536,10 @@ class _RestaurantsListState extends State<RestaurantsList> {
                     setState(() {
                       sortAction = 3;
                       isFinished = false;
+                      isFinishedFavourite = false;
+                      needRestartFavourite = true;
                     });
-                    _loadData();
+                    (selected == 1) ? _loadData() : addDataToFavourite();
                     Navigator.of(context).pop();
                   },
                   child: const Text('Oceni(↑)'),
@@ -359,8 +553,10 @@ class _RestaurantsListState extends State<RestaurantsList> {
                     setState(() {
                       sortAction = 4;
                       isFinished = false;
+                      isFinishedFavourite = false;
+                      needRestartFavourite = true;
                     });
-                    _loadData();
+                    (selected == 1) ? _loadData() : addDataToFavourite();
                     Navigator.of(context).pop();
                   },
                   child: const Text('Oceni(↓)'),
@@ -378,8 +574,10 @@ class _RestaurantsListState extends State<RestaurantsList> {
                     setState(() {
                       sortAction = 5;
                       isFinished = false;
+                      isFinishedFavourite = false;
+                      needRestartFavourite = true;
                     });
-                    _loadData();
+                    (selected == 1) ? _loadData() : addDataToFavourite();
                     Navigator.of(context).pop();
                   },
                   child: const Text('Guzvi(↑)'),
@@ -393,8 +591,10 @@ class _RestaurantsListState extends State<RestaurantsList> {
                     setState(() {
                       sortAction = 6;
                       isFinished = false;
+                      isFinishedFavourite = false;
+                      needRestartFavourite = true;
                     });
-                    _loadData();
+                    (selected == 1) ? _loadData() : addDataToFavourite();
                     Navigator.of(context).pop();
                   },
                   child: const Text('Guzvi(↓)'),
@@ -408,12 +608,14 @@ class _RestaurantsListState extends State<RestaurantsList> {
                     backgroundColor:
                         (sortAction == 8) ? Colors.red : Colors.blue,
                   ),
-                  onPressed: () async {
+                  onPressed: () {
                     setState(() {
                       sortAction = 8;
                       isFinished = false;
+                      isFinishedFavourite = false;
+                      needRestartFavourite = true;
                     });
-                    _loadData();
+                    (selected == 1) ? _loadData() : addDataToFavourite();
                     Navigator.of(context).pop();
                   },
                   child: const Text('Posecenosti(↑)'),
@@ -423,12 +625,14 @@ class _RestaurantsListState extends State<RestaurantsList> {
                     backgroundColor:
                         (sortAction == 7) ? Colors.red : Colors.blue,
                   ),
-                  onPressed: () async {
+                  onPressed: () {
                     setState(() {
                       sortAction = 7;
                       isFinished = false;
+                      isFinishedFavourite = false;
+                      needRestartFavourite = true;
                     });
-                    _loadData();
+                    (selected == 1) ? _loadData() : addDataToFavourite();
                     Navigator.of(context).pop();
                   },
                   child: const Text('Posecenosti(↓)'),
@@ -442,8 +646,12 @@ class _RestaurantsListState extends State<RestaurantsList> {
   }
 
   // ignore: non_constant_identifier_names
-  Widget AllRestaurantsMethod(List<Restaurant> restaurants) {
+  Widget AllRestaurantsMethod() {
     return RestaurantsView(restaurants);
+  }
+
+  Widget FavouriteRestaurantsMethod() {
+    return RestaurantsView(favouriteRestaurants);
   }
 
   // ignore: non_constant_identifier_names
@@ -451,7 +659,8 @@ class _RestaurantsListState extends State<RestaurantsList> {
     return Expanded(
       child: ListView.builder(
         itemCount: restaurants.length,
-        controller: _scrollController,
+        controller:
+            (selected == 1) ? _scrollController : _scrollControllerFavourite,
         itemBuilder: (context, index) {
           final restaurant = restaurants[index];
 
@@ -493,6 +702,7 @@ class _RestaurantsListState extends State<RestaurantsList> {
                     }
                     setState(() {
                       restaurant.isFavourite = !restaurant.isFavourite;
+                      needRestartFavourite = true;
                     });
                     if (selected != 1) {
                       setState(() {
