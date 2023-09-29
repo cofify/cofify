@@ -3,10 +3,15 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 class MyUser extends ChangeNotifier {
   final String uid;
+  final bool isVerified;
   MyUser({
     required this.uid,
+    required this.isVerified,
   });
-  factory MyUser.fromFirebase(User user) => MyUser(uid: user.uid);
+  factory MyUser.fromFirebase(User user) => MyUser(
+        uid: user.uid,
+        isVerified: user.emailVerified,
+      );
 }
 
 class UserData {

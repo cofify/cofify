@@ -26,4 +26,39 @@ class AuthService implements AuthProvider {
 
   @override
   Stream<MyUser> get user => provider.user;
+
+  @override
+  Future<MyUser> signUpEmailPass(
+    String email,
+    String password,
+    String name,
+    String surname,
+  ) =>
+      provider.signUpEmailPass(
+        email,
+        password,
+        name,
+        surname,
+      );
+
+  @override
+  Future<MyUser> signInEmailPass(
+    String email,
+    String password,
+  ) =>
+      provider.signInEmailPass(
+        email,
+        password,
+      );
+
+  @override
+  Future<void> sendEmailVerification() => provider.sendEmailVerification();
+
+  @override
+  Future<void> resetPassword(
+    String email,
+  ) =>
+      provider.resetPassword(
+        email,
+      );
 }

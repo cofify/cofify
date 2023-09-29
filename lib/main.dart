@@ -43,7 +43,10 @@ class MyApp extends StatelessWidget {
 
     return StreamProvider<MyUser>.value(
       value: auth.user,
-      initialData: MyUser(uid: ''),
+      initialData: MyUser(
+        uid: '',
+        isVerified: false,
+      ),
       child: MaterialApp(
         initialRoute: '/',
         routes: appRoutes,
