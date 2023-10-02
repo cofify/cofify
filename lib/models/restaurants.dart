@@ -14,6 +14,25 @@ class Restaurant {
   final String imageURL;
   final LatLng latlng;
   final double distance;
+  final int crowd;
+  final int visits;
+
+  factory Restaurant.createDefault() => Restaurant(
+        uid: "",
+        name: "name",
+        description: "description",
+        location: "location",
+        opened: false,
+        workTime: [],
+        reviews: [],
+        averageRate: 0,
+        isFavourite: false,
+        imageURL: "imageURL",
+        latlng: LatLng(latitude: 0, longitude: 0),
+        distance: 0,
+        crowd: 0,
+        visits: 0,
+      );
 
   Restaurant({
     required this.uid,
@@ -28,5 +47,7 @@ class Restaurant {
     required this.imageURL,
     required this.latlng,
     required this.distance,
+    required this.crowd,
+    required this.visits,
   });
 }

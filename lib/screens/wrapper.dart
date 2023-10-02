@@ -7,6 +7,15 @@ import 'package:cofify/screens/loadingScreen.dart';
 import 'package:cofify/screens/login_page.dart';
 import 'package:cofify/screens/restaurants_list_page.dart';
 import 'package:cofify/screens/welecome_page.dart';
+import 'dart:developer';
+
+import 'package:cofify/models/user.dart';
+import 'package:cofify/screens/choose_city.dart';
+import 'package:cofify/screens/email_verification.dart';
+// import 'package:cofify/screens/home.dart';
+import 'package:cofify/screens/login.dart';
+import 'package:cofify/screens/restaurants_view.dart';
+import 'package:cofify/screens/user_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -21,22 +30,26 @@ class Wrapper extends StatelessWidget {
   Widget build(BuildContext context) {
     final user = Provider.of<MyUser>(context);
 
+    if (Navigator.of(context).canPop()) {
+      Navigator.of(context).pop();
+    }
+
     if (user.uid == '') {
-      if (Navigator.of(context).canPop()) {
-        Navigator.of(context).pop();
-      }
-
-      return const WelecomePage();
-      // return const LoginScreen();
+      log("ovde sam");
+      return const LoginScreen();
+      // return const HomePage();
     } else {
-      // return const LoadingScreen();
-      // return const HomeView();
+      // if (user.isVerified) {
+      //   //return const UserProfile();
+      //   return const RestaurantsListPage();
+      //   //return const HomeView();
+      // } else {
+      //   return const EmailVerification();
+      // }
 
-      // Clear all routes from the stack
-      if (Navigator.of(context).canPop()) {
-        Navigator.of(context).pop();
-      }
-      return const RestaurantsListPage();
+      //return const HomePage();
+      return const RestaurantsView();
+      //return const ChooseCity();
     }
   }
 }

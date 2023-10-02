@@ -19,7 +19,6 @@ class RestaurantList extends StatelessWidget {
       GlobalKey<PillButtonsFrontClippedTextState>();
 
   RestaurantList({super.key});
-  // ignore: prefer_typing_uninitialized_variables
 
   @override
   Widget build(BuildContext context) {

@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cofify/models/latlng.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -19,6 +20,14 @@ class LocationService {
     } catch (e) {
       throw Error();
     }
+  }
+
+  Future<GeoPoint?> myGeoPoint() async {
+    LatLng? latLng = await getMyLocation();
+    if (latLng == null) {
+      return null;
+    }
+    return GeoPoint(latLng.latitude, latLng.longitude);
   }
 
   Future<LatLng?> getMyLocation() async {

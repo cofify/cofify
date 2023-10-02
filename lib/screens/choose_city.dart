@@ -1,3 +1,5 @@
+import 'package:cofify/services/auth_service.dart';
+import 'package:cofify/services/user_database_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -15,6 +17,8 @@ class ChooseCity extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final searchDataProvider = Provider.of<ChooseCityDataProvider>(context);
+    AuthService auth = AuthService.firebase();
+    DatabaseService dbService = DatabaseService(uid: auth.currentUser!.uid);
 
     return Scaffold(
       appBar: const CommonAppBar(
@@ -78,8 +82,12 @@ class ChooseCity extends StatelessWidget {
                   ),
                   child: Center(
                     child: ThinWideButton(
-                      onPress: () {
-                        Navigator.of(context).pushNamed('/restaurantsList');
+                      // TODO Proveri da li pushNamedAndRemoveUntil radi kako treba
+                      onPress: () async {
+                        dbService.saveCityLocaly(
+                            searchDataProvider.getSelectedCity());
+                        Navigator.of(context).pushNamedAndRemoveUntil(
+                            '/restaurants', (route) => false);
                       },
                       buttonText: "Primeni",
                       lowImportance: (searchDataProvider.filteredList.isEmpty)

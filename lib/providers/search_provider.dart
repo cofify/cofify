@@ -22,6 +22,9 @@ abstract class SearchProvider extends ChangeNotifier {
 
   /// Postavljanje odabranog indexa
   void setSelectedIndex(int index);
+
+  // Vraca izabrani grad
+  String getSelectedCity();
 }
 
 class ChooseCityDataProvider extends SearchProvider {
@@ -110,4 +113,7 @@ class ChooseCityDataProvider extends SearchProvider {
       return element.toLowerCase().contains(_searchQuery.toLowerCase());
     }).toList();
   }
+
+  @override
+  String getSelectedCity() => _filterItemsList[_selectedIndex];
 }
