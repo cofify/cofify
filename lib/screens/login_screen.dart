@@ -37,11 +37,19 @@ class LoginScreen extends StatelessWidget {
                 CrossedText(text: 'ili', centerTextSize: centerTextSize),
                 const SizedBox(height: 20),
                 RegularButton(
-                  onPress: () async {
-                    await auth.signInAnon();
-                    // Navigator.of(context).pushNamed('/chooseCity');
+                  onPress: () {
+                    Navigator.of(context).pushNamed('/register');
                   },
-                  buttonText: "Nastavite kao gost",
+                  buttonText: "Napravi nalog",
+                ),
+                const SizedBox(height: 20),
+                RegularButton(
+                  onPress: () {
+                    Navigator.of(context).pushNamed(
+                      '/loginScreen',
+                    );
+                  },
+                  buttonText: "Prijavi se",
                 ),
                 const SizedBox(height: 20),
               ],
