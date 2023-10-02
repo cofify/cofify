@@ -25,8 +25,9 @@ class _RestaurantsListState extends State<RestaurantsList> {
   final ScrollController _scrollController = ScrollController();
   final ScrollController _scrollControllerFavourite = ScrollController();
 
-  List<Restaurant> restaurants = List.empty();
+  List<Restaurant> restaurants = [];
   List<Restaurant> favouriteRestaurants = [];
+  List<Restaurant> oldRestaurants = [];
   List<String> favRes = [];
 
   bool isLoading = false;
@@ -41,6 +42,10 @@ class _RestaurantsListState extends State<RestaurantsList> {
   DocumentSnapshot? documentSnapshot;
   DocumentSnapshot? documentSnapshotFavourite;
 
+  List<String> productFilters = [];
+
+  String? searchText;
+
   @override
   void initState() {
     super.initState();
@@ -51,16 +56,17 @@ class _RestaurantsListState extends State<RestaurantsList> {
     isLoadingFavourite = false;
     isFinishedFavourite = false;
     sortAction = 0;
-    restaurants = List.empty();
+    restaurants = [];
     favouriteRestaurants = [];
     documentSnapshot = null;
     documentSnapshotFavourite = null;
+    searchText = null;
   }
 
   Future<void> _loadData() async {
     setState(() {
       isLoading = true;
-      restaurants.clear();
+      restaurants = [];
     });
 
     if (restaurants.isNotEmpty) {
@@ -70,9 +76,13 @@ class _RestaurantsListState extends State<RestaurantsList> {
       documentSnapshot = null;
     }
 
-    await RestaurantDatabaseService().getRestaurants(-1, false, null, 0);
+    //await RestaurantDatabaseService().getRestaurants(-1, false, null, 0);
     final newRestaurants = await RestaurantDatabaseService().getRestaurants(
-        sortAction, (selected == 1) ? false : true, documentSnapshot, 3);
+      sortAction,
+      (selected == 1) ? false : true,
+      documentSnapshot,
+      3,
+    );
 
     if (newRestaurants.isNotEmpty) {
       setState(() {
@@ -103,7 +113,11 @@ class _RestaurantsListState extends State<RestaurantsList> {
           .getDocumentSnapshot(restaurants.last.uid);
 
       final newRestaurants = await RestaurantDatabaseService().getRestaurants(
-          sortAction, (selected == 1) ? false : true, documentSnapshot, 3);
+        sortAction,
+        (selected == 1) ? false : true,
+        documentSnapshot,
+        3,
+      );
       if (newRestaurants.isNotEmpty) {
         restaurants.addAll(newRestaurants);
         setState(() {
@@ -180,23 +194,55 @@ class _RestaurantsListState extends State<RestaurantsList> {
           });
         }
       }
-
-      // final newRestaurants = await RestaurantDatabaseService().getRestaurants(
-      //     sortAction, (selected == 1) ? false : true, documentSnapshot, 3);
-      // if (newRestaurants.isNotEmpty) {
-      //   restaurants.addAll(newRestaurants);
-      //   setState(() {
-      //     isLoading = false;
-      //     isFinished = false;
-      //   });
-      // } else {
-      //   setState(() {
-      //     isLoading = false;
-      //     isFinished = true;
-      //   });
-      // }
     }
   }
+
+  // Future<void> searchRestaurants(String text) async {
+  //   if (oldRestaurants.isEmpty) {
+  //     setState(() {
+  //       (selected == 1)
+  //           ? oldRestaurants.addAll(restaurants)
+  //           : oldRestaurants.addAll(favouriteRestaurants);
+  //     });
+  //   }
+  //   if (text.length > 2) {
+  //     final newRestaurants =
+  //         await RestaurantDatabaseService().getRestaurantsSearch(
+  //       text,
+  //       (selected == 1) ? false : true,
+  //     );
+  //     log(newRestaurants.toString());
+  //     setState(() {
+  //       (selected == 1) ? restaurants.clear() : favouriteRestaurants.clear();
+  //       (selected == 1)
+  //           ? restaurants.addAll(newRestaurants)
+  //           : favouriteRestaurants.addAll(newRestaurants);
+  //       (selected == 1) ? isFinished = true : isFinishedFavourite = true;
+  //     });
+  //   }
+  //   if (text.isEmpty) {
+  //     setState(() {
+  //       searchText = null;
+  //       (selected == 1) ? restaurants.clear() : favouriteRestaurants.clear();
+  //       (selected == 1) ? isLoading = false : isLoadingFavourite = false;
+  //       (selected == 1) ? isFinished = false : isFinishedFavourite = false;
+  //       sortAction = 0;
+  //       sortAction = 0;
+  //       (selected == 1)
+  //           ? documentSnapshot = null
+  //           : documentSnapshotFavourite = null;
+  //     });
+  //     if (oldRestaurants.isEmpty) {
+  //       (selected == 1) ? await _loadData() : await addDataToFavourite();
+  //     } else {
+  //       setState(() {
+  //         (selected == 1)
+  //             ? restaurants.addAll(oldRestaurants)
+  //             : favouriteRestaurants.addAll(oldRestaurants);
+  //       });
+  //     }
+  //   }
+  // }
 
   Future<void> addDataToFavourite() async {
     if (sortAction == 0) {
@@ -290,6 +336,10 @@ class _RestaurantsListState extends State<RestaurantsList> {
                 _showSortOptions(context, restaurants, true);
               },
             ),
+            IconButton(
+              onPressed: () {},
+              icon: const Icon(Icons.person),
+            ),
           ],
         ),
         body: const Center(
@@ -307,10 +357,30 @@ class _RestaurantsListState extends State<RestaurantsList> {
                 _showSortOptions(context, restaurants, false);
               },
             ),
+            IconButton(
+              onPressed: () {},
+              icon: const Icon(Icons.person),
+            ),
           ],
         ),
         body: Column(
           children: [
+            const SizedBox(
+              height: 10,
+            ),
+            SizedBox(
+              width: 300,
+              child: TextFormField(
+                keyboardType: TextInputType.name,
+                decoration: const InputDecoration(
+                  hintText: 'Pretrazi restorane',
+                  border: OutlineInputBorder(),
+                ),
+                onChanged: (text) async {
+                  //await searchRestaurants(text);
+                },
+              ),
+            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -367,10 +437,34 @@ class _RestaurantsListState extends State<RestaurantsList> {
               _showSortOptions(context, restaurants, true);
             },
           ),
+          IconButton(
+            onPressed: () async {
+              final userData = await authService.getUserData;
+              Navigator.of(context)
+                  .pushNamed('/userProfile', arguments: userData);
+            },
+            icon: const Icon(Icons.person),
+          ),
         ],
       ),
       body: Column(
         children: [
+          const SizedBox(
+            height: 10,
+          ),
+          SizedBox(
+            width: 300,
+            child: TextFormField(
+              keyboardType: TextInputType.name,
+              decoration: const InputDecoration(
+                hintText: 'Pretrazi restorane',
+                border: OutlineInputBorder(),
+              ),
+              onChanged: (text) async {
+                //await searchRestaurants(text);
+              },
+            ),
+          ),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -424,7 +518,7 @@ class _RestaurantsListState extends State<RestaurantsList> {
       context: context,
       builder: (context) {
         return SizedBox(
-          height: (action) ? 300 : 100, // Visina Bottom Sheeta
+          height: (action) ? 500 : 100, // Visina Bottom Sheeta
           child: Column(
             children: [
               const SizedBox(
@@ -641,6 +735,65 @@ class _RestaurantsListState extends State<RestaurantsList> {
             ),
           ],
         ),
+        const SizedBox(
+          height: 10,
+        ),
+        const Text('Tipovi hrane i pica'),
+        const SizedBox(
+          height: 10,
+        ),
+        Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: (productFilters.contains('Kafa'))
+                        ? Colors.red
+                        : Colors.blue,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      if (productFilters.contains('Kafa')) {
+                        productFilters.remove('Kafa');
+                      } else {
+                        productFilters.add('Kafa');
+                      }
+                    });
+                  },
+                  child: const Text(
+                    'Kafa',
+                  ),
+                ),
+                ElevatedButton(
+                  onPressed: () {},
+                  child: const Text(
+                    'Pivo',
+                  ),
+                ),
+                ElevatedButton(
+                  onPressed: () {},
+                  child: const Text(
+                    'Sokovi',
+                  ),
+                ),
+                ElevatedButton(
+                  onPressed: () {},
+                  child: const Text(
+                    'Vino',
+                  ),
+                ),
+                ElevatedButton(
+                  onPressed: () {},
+                  child: const Text(
+                    'Ribe',
+                  ),
+                ),
+              ],
+            )
+          ],
+        )
       ],
     );
   }

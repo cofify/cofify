@@ -61,4 +61,7 @@ class AuthService implements AuthProvider {
       provider.resetPassword(
         email,
       );
+
+  @override
+  Future<UserData?> get getUserData => provider.getUserData;
 }

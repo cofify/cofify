@@ -96,7 +96,6 @@ class FirebaseAuthProvider implements AuthProvider {
   @override
   Stream<MyUser> get user {
     return FirebaseAuth.instance.authStateChanges().map((user) {
-      print(user);
       return _userFormFirebaseUser(user);
     });
   }
@@ -203,6 +202,16 @@ class FirebaseAuthProvider implements AuthProvider {
       }
     } catch (_) {
       throw GenericAuthException();
+    }
+  }
+
+  @override
+  Future<UserData?> get getUserData async {
+    if (FirebaseAuth.instance.currentUser != null) {
+      return await DatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
+          .getUserData();
+    } else {
+      throw UserNotFoundAuthException();
     }
   }
 }

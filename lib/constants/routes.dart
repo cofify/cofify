@@ -1,5 +1,6 @@
 import 'package:cofify/screens/login.dart';
 import 'package:cofify/screens/register.dart';
+import 'package:cofify/screens/user_profile.dart';
 import 'package:flutter/material.dart';
 
 // screens
@@ -15,4 +16,5 @@ Map<String, WidgetBuilder> appRoutes = {
   '/chooseCity': (context) => const ChooseCity(),
   '/restaurants': (context) => const RestaurantsView(),
   '/register': (context) => const RegisterView(),
+  '/userProfile': (context) => const UserProfile(),
 };

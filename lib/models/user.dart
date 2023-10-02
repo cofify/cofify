@@ -1,7 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-class MyUser extends ChangeNotifier {
+class MyUser {
   final String uid;
   final bool isVerified;
   MyUser({
@@ -14,14 +13,16 @@ class MyUser extends ChangeNotifier {
       );
 }
 
-class UserData {
-  final String name;
-  final String lastName;
-  final String location;
+class UserData extends MyUser {
+  final String displayName;
+  final String? profileImage;
+  final String email;
 
   UserData({
-    required this.name,
-    required this.lastName,
-    required this.location,
+    required super.uid,
+    required super.isVerified,
+    required this.displayName,
+    required this.profileImage,
+    required this.email,
   });
 }

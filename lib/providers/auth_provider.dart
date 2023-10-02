@@ -21,4 +21,5 @@ abstract class AuthProvider {
   Future<void> resetPassword(
     String email,
   );
+  Future<UserData?> get getUserData;
 }

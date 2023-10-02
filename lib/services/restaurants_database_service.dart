@@ -144,7 +144,6 @@ class RestaurantDatabaseService {
   // vraca listu restorana na osnovu prosledjenog query-a
   Future<List<Restaurant>> _getSelectedRestauratns(
     Query query,
-    int action,
   ) async {
     final restaurants = <Restaurant>[];
     final snapshot = await query.get();
@@ -163,16 +162,13 @@ class RestaurantDatabaseService {
     int restaurantsPerPage,
   ) async {
     try {
-      if (action == -1) {
-        documentSnapshot = null;
-        return [];
-      }
       final userCity = await getSelectedCity();
 
       Query query = restaurantsCollection.where(
         'city',
         isEqualTo: userCity,
       );
+
       if (favourite) {
         List<String> myFavouriteRestaurants =
             await DatabaseService(uid: _auth.currentUser!.uid)
@@ -186,6 +182,7 @@ class RestaurantDatabaseService {
           return [];
         }
       }
+
       switch (action) {
         case 1:
           final userLocation = await LocationService().myGeoPoint();
@@ -230,8 +227,9 @@ class RestaurantDatabaseService {
       if (documentSnapshot != null) {
         query = query.startAfterDocument(documentSnapshot);
       }
-      return await _getSelectedRestauratns(query, 1);
+      return await _getSelectedRestauratns(query);
     } catch (e) {
+      log(e.toString());
       throw LoadingRestaurantsException();
     }
   }
@@ -274,7 +272,55 @@ class RestaurantDatabaseService {
   // Stream liste restorana
   Stream<List<Restaurant>> get restaurants {
     return restaurantsCollection.snapshots().asyncMap((snapshot) async {
-      return await getRestaurants(0, false, null, 3);
+      return await getRestaurants(
+        0,
+        false,
+        null,
+        3,
+      );
     });
   }
+
+  // // Vraca listu pretrazenih restorana
+  // Future<List<Restaurant>> getRestaurantsSearch(
+  //   String searchText,
+  //   bool favourite,
+  // ) async {
+  //   if (searchText.isNotEmpty) {
+  //     try {
+  //       final userCity = await getSelectedCity();
+
+  //       Query query = restaurantsCollection.where(
+  //         'city',
+  //         isEqualTo: userCity,
+  //       );
+  //       if (favourite) {
+  //         List<String> myFavouriteRestaurants =
+  //             await DatabaseService(uid: _auth.currentUser!.uid)
+  //                 .getFavouriteRestourants();
+  //         if (myFavouriteRestaurants.isNotEmpty) {
+  //           query = query.where(
+  //             'id',
+  //             whereIn: myFavouriteRestaurants,
+  //           );
+  //         } else {
+  //           return [];
+  //         }
+  //       }
+  //       query = query
+  //           .where(
+  //             'name',
+  //             isGreaterThanOrEqualTo: searchText,
+  //           )
+  //           .where('name', isLessThanOrEqualTo: '$searchText\uf8ff');
+  //       log(query.parameters.toString());
+  //       return await _getSelectedRestauratns(query);
+  //     } catch (e) {
+  //       log(e.toString());
+  //       throw LoadingRestaurantsException();
+  //     }
+  //   } else {
+  //     return [];
+  //   }
+  // }
 }
