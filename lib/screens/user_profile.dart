@@ -100,7 +100,6 @@ class _UserProfileState extends State<UserProfile> {
                         ? Image.network(userData.profileImage!)
                         : Image.network(profileImage!),
           ),
-          //_buildProfileImage(userData.profileImage),
           Text('Ime I Prezime: ${userData.displayName}'),
           Text('Email Adresa: ${userData.email}'),
           const SizedBox(height: 20),
@@ -124,26 +123,5 @@ class _UserProfileState extends State<UserProfile> {
         ],
       ),
     );
-  }
-
-  Widget _buildProfileImage(String? imageUrl) {
-    //log(imageUrl.toString());
-    if (!isLoading) {
-      return (imageUrl != null)
-          ? SizedBox(
-              width: 300,
-              height: 300,
-              child: Image.network(imageUrl),
-            )
-          : const Text('Profile Image Is NULL');
-    } else {
-      return const SizedBox(
-        height: 300,
-        width: 300,
-        child: Center(
-          child: CircularProgressIndicator(),
-        ),
-      );
-    }
   }
 }

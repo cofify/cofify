@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cofify/models/restaurants.dart';
 import 'package:cofify/services/auth_service.dart';
-import 'package:cofify/services/location_service.dart';
 import 'package:cofify/services/restaurants_database_service.dart';
 import 'package:cofify/services/user_database_service.dart';
 import 'package:flutter/material.dart';
@@ -30,6 +29,8 @@ class _RestaurantsListState extends State<RestaurantsList> {
   List<Restaurant> oldRestaurants = [];
   List<String> favRes = [];
 
+  int sel = 0;
+
   bool isLoading = false;
   bool isFinished = false;
 
@@ -38,13 +39,14 @@ class _RestaurantsListState extends State<RestaurantsList> {
 
   int sortAction = 0;
   bool needRestartFavourite = false;
+  bool needRestartMain = false;
 
   DocumentSnapshot? documentSnapshot;
   DocumentSnapshot? documentSnapshotFavourite;
 
-  List<String> productFilters = [];
-
   String? searchText;
+
+  List<String> productsFilter = [];
 
   @override
   void initState() {
@@ -63,12 +65,52 @@ class _RestaurantsListState extends State<RestaurantsList> {
     searchText = null;
   }
 
+  void setProductsFilter(String newValue) {
+    setState(() {
+      if (productsFilter.contains(newValue)) {
+        productsFilter.remove(newValue);
+      } else {
+        productsFilter.add(newValue);
+      }
+      if (selected == 2) {
+        needRestartMain = true;
+      }
+    });
+  }
+
+  Color checkProductsFilterColor(String product) {
+    return productsFilter.contains(product) ? Colors.red : Colors.blue;
+  }
+
+  void setSortOption(int newValue) {
+    setState(() {
+      sortAction = newValue;
+    });
+  }
+
+  void setIsFinished(bool newValue) {
+    setState(() {
+      isFinished = newValue;
+    });
+  }
+
+  void setIsFinishedFavourite(bool newValue) {
+    setState(() {
+      isFinishedFavourite = newValue;
+    });
+  }
+
+  void setNeedRestartFavourite(bool newValue) {
+    setState(() {
+      isFinishedFavourite = newValue;
+    });
+  }
+
   Future<void> _loadData() async {
     setState(() {
       isLoading = true;
-      restaurants = [];
+      restaurants.clear();
     });
-
     if (restaurants.isNotEmpty) {
       documentSnapshot = await RestaurantDatabaseService()
           .getDocumentSnapshot(restaurants.last.uid);
@@ -82,10 +124,12 @@ class _RestaurantsListState extends State<RestaurantsList> {
       (selected == 1) ? false : true,
       documentSnapshot,
       3,
+      productsFilter,
     );
 
     if (newRestaurants.isNotEmpty) {
       setState(() {
+        restaurants.clear();
         restaurants.addAll(newRestaurants);
         isLoading = false;
       });
@@ -117,6 +161,7 @@ class _RestaurantsListState extends State<RestaurantsList> {
         (selected == 1) ? false : true,
         documentSnapshot,
         3,
+        productsFilter,
       );
       if (newRestaurants.isNotEmpty) {
         restaurants.addAll(newRestaurants);
@@ -180,6 +225,7 @@ class _RestaurantsListState extends State<RestaurantsList> {
           true,
           documentSnapshotFavourite,
           3,
+          productsFilter,
         );
         if (newRest.isNotEmpty) {
           favouriteRestaurants.addAll(newRest);
@@ -245,9 +291,11 @@ class _RestaurantsListState extends State<RestaurantsList> {
   // }
 
   Future<void> addDataToFavourite() async {
-    if (sortAction == 0) {
+    if (sortAction == 0 && productsFilter.isEmpty) {
       if (favouriteRestaurants.isEmpty || needRestartFavourite) {
-        favouriteRestaurants = List.empty();
+        setState(() {
+          favouriteRestaurants.clear();
+        });
         if (favRes.isEmpty || needRestartFavourite) {
           favRes = await dbService.getFavouriteRestourants();
         }
@@ -270,10 +318,11 @@ class _RestaurantsListState extends State<RestaurantsList> {
             true,
             documentSnapshotFavourite,
             3 - favouriteRestaurants.length,
+            productsFilter,
           );
           if (newRest.isNotEmpty) {
-            favouriteRestaurants.addAll(newRest);
             setState(() {
+              favouriteRestaurants.addAll(newRest);
               isLoadingFavourite = false;
               isFinishedFavourite = false;
             });
@@ -287,7 +336,9 @@ class _RestaurantsListState extends State<RestaurantsList> {
       }
     } else {
       if (needRestartFavourite) {
-        favouriteRestaurants = [];
+        setState(() {
+          favouriteRestaurants.clear();
+        });
         if (favRes.isEmpty || needRestartFavourite) {
           favRes = await dbService.getFavouriteRestourants();
         }
@@ -302,10 +353,11 @@ class _RestaurantsListState extends State<RestaurantsList> {
           true,
           documentSnapshotFavourite,
           3,
+          productsFilter,
         );
         if (newRest.isNotEmpty) {
-          favouriteRestaurants.addAll(newRest);
           setState(() {
+            favouriteRestaurants.addAll(newRest);
             isLoadingFavourite = false;
             isFinishedFavourite = false;
           });
@@ -322,7 +374,6 @@ class _RestaurantsListState extends State<RestaurantsList> {
   @override
   Widget build(BuildContext context) {
     restaurants = Provider.of<List<Restaurant>>(context);
-
     dbService = DatabaseService(uid: authService.currentUser!.uid);
     if (restaurants.length == 1 && restaurants[0].uid.isEmpty) {
       // loading
@@ -381,41 +432,7 @@ class _RestaurantsListState extends State<RestaurantsList> {
                 },
               ),
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ElevatedButton(
-                  onPressed: () async {
-                    setState(() {
-                      selected = 1;
-                      isFinished = false;
-                    });
-                    await _loadData();
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: (selected == 1) ? Colors.red : Colors.blue,
-                  ),
-                  child: const Text("Svi oglasi"),
-                ),
-                const SizedBox(
-                  width: 20,
-                ),
-                ElevatedButton(
-                  onPressed: () async {
-                    await LocationService().checkAndRequestLocationPermission();
-                    setState(() {
-                      selected = 2;
-                      isFinishedFavourite = false;
-                    });
-                    await _loadData();
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: (selected != 1) ? Colors.red : Colors.blue,
-                  ),
-                  child: const Text("Omiljeni oglasi"),
-                ),
-              ],
-            ),
+            allOrFavourite(),
             Center(
               child: Text(
                 (selected == 1)
@@ -440,6 +457,7 @@ class _RestaurantsListState extends State<RestaurantsList> {
           IconButton(
             onPressed: () async {
               final userData = await authService.getUserData;
+              // ignore: use_build_context_synchronously
               Navigator.of(context)
                   .pushNamed('/userProfile', arguments: userData);
             },
@@ -465,42 +483,7 @@ class _RestaurantsListState extends State<RestaurantsList> {
               },
             ),
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              ElevatedButton(
-                onPressed: () async {
-                  setState(() {
-                    selected = 1;
-                    isFinished = false;
-                  });
-                  //await _loadData();
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: (selected == 1) ? Colors.red : Colors.blue,
-                ),
-                child: const Text("Svi oglasi"),
-              ),
-              const SizedBox(
-                width: 20,
-              ),
-              ElevatedButton(
-                onPressed: () async {
-                  //await LocationService().checkAndRequestLocationPermission();
-                  await addDataToFavourite();
-                  setState(() {
-                    selected = 2;
-                    isFinishedFavourite = false;
-                  });
-                  //await _loadData();
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: (selected != 1) ? Colors.red : Colors.blue,
-                ),
-                child: const Text("Omiljeni oglasi"),
-              ),
-            ],
-          ),
+          allOrFavourite(),
           (selected == 1)
               ? AllRestaurantsMethod()
               : FavouriteRestaurantsMethod(),
@@ -509,6 +492,48 @@ class _RestaurantsListState extends State<RestaurantsList> {
               : Container(),
         ],
       ),
+    );
+  }
+
+  Row allOrFavourite() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        ElevatedButton(
+          onPressed: () async {
+            setState(() {
+              selected = 1;
+              isFinished = false;
+            });
+            if (needRestartMain) {
+              await _loadData();
+              setState(() {
+                needRestartMain = false;
+              });
+            }
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: (selected == 1) ? Colors.red : Colors.blue,
+          ),
+          child: const Text("Svi oglasi"),
+        ),
+        const SizedBox(
+          width: 20,
+        ),
+        ElevatedButton(
+          onPressed: () async {
+            await addDataToFavourite();
+            setState(() {
+              selected = 2;
+              isFinishedFavourite = false;
+            });
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: (selected != 1) ? Colors.red : Colors.blue,
+          ),
+          child: const Text("Omiljeni oglasi"),
+        ),
+      ],
     );
   }
 
@@ -558,7 +583,51 @@ class _RestaurantsListState extends State<RestaurantsList> {
                   }
                 },
               ),
-              (action) ? RestaurantFilter(restaurants) : Container(),
+              (action)
+                  ? RestaurantFilter(
+                      sortAction: sortAction,
+                      isFinished: isFinished,
+                      isFinishedFavourite: isFinished,
+                      needRestartFavourite: needRestartFavourite,
+                      loadData: _loadData,
+                      addDataToFavourite: addDataToFavourite,
+                      setSortAction: setSortOption,
+                      setIsFinished: setIsFinished,
+                      setIsFinishedFavourite: setIsFinishedFavourite,
+                      setNeedRestartFavourite: setNeedRestartFavourite,
+                    )
+                  : Container(),
+              AdditionalFilters(
+                productsFilter: productsFilter,
+                setProductsFilter: setProductsFilter,
+                checkProductsFilterColor: checkProductsFilterColor,
+              ),
+              SizedBox(
+                width: MediaQuery.of(context).size.width,
+                child: ElevatedButton(
+                  onPressed: () async {
+                    print(productsFilter);
+                    setState(() {
+                      restaurants = [];
+                      favouriteRestaurants = [];
+                      isFinished = false;
+                      isFinishedFavourite = false;
+                      needRestartFavourite = true;
+                    });
+                    (selected == 1)
+                        ? await _loadData()
+                        : await addDataToFavourite();
+                    // ignore: use_build_context_synchronously
+                    try {
+                      // ignore: use_build_context_synchronously
+                      Navigator.of(context).pop();
+                    } catch (e) {
+                      print('Vec podignuto!');
+                    }
+                  },
+                  child: const Text('Primeni'),
+                ),
+              ),
             ],
           ),
         );
@@ -567,242 +636,11 @@ class _RestaurantsListState extends State<RestaurantsList> {
   }
 
   // ignore: non_constant_identifier_names
-  Widget RestaurantFilter(List<Restaurant> restaurants) {
-    return Column(
-      children: [
-        const SizedBox(
-          height: 20,
-        ),
-        const Text('Sortiraj prema'),
-        const SizedBox(
-          height: 10,
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Column(
-              children: [
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor:
-                        (sortAction == 1) ? Colors.red : Colors.blue,
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      sortAction = 1;
-                      isFinished = false;
-                      isFinishedFavourite = false;
-                      needRestartFavourite = true;
-                    });
-                    (selected == 1) ? _loadData() : addDataToFavourite();
-                    Navigator.of(context).pop();
-                  },
-                  child: const Text('Blizini(↑)'),
-                ),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor:
-                        (sortAction == 2) ? Colors.red : Colors.blue,
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      sortAction = 2;
-                      isFinished = false;
-                      isFinishedFavourite = false;
-                      needRestartFavourite = true;
-                    });
-                    (selected == 1) ? _loadData() : addDataToFavourite();
-                    Navigator.of(context).pop();
-                  },
-                  child: const Text('Blizini(↓)'),
-                ),
-              ],
-            ),
-            Column(
-              children: [
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor:
-                        (sortAction == 3) ? Colors.red : Colors.blue,
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      sortAction = 3;
-                      isFinished = false;
-                      isFinishedFavourite = false;
-                      needRestartFavourite = true;
-                    });
-                    (selected == 1) ? _loadData() : addDataToFavourite();
-                    Navigator.of(context).pop();
-                  },
-                  child: const Text('Oceni(↑)'),
-                ),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor:
-                        (sortAction == 4) ? Colors.red : Colors.blue,
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      sortAction = 4;
-                      isFinished = false;
-                      isFinishedFavourite = false;
-                      needRestartFavourite = true;
-                    });
-                    (selected == 1) ? _loadData() : addDataToFavourite();
-                    Navigator.of(context).pop();
-                  },
-                  child: const Text('Oceni(↓)'),
-                ),
-              ],
-            ),
-            Column(
-              children: [
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor:
-                        (sortAction == 5) ? Colors.red : Colors.blue,
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      sortAction = 5;
-                      isFinished = false;
-                      isFinishedFavourite = false;
-                      needRestartFavourite = true;
-                    });
-                    (selected == 1) ? _loadData() : addDataToFavourite();
-                    Navigator.of(context).pop();
-                  },
-                  child: const Text('Guzvi(↑)'),
-                ),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor:
-                        (sortAction == 6) ? Colors.red : Colors.blue,
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      sortAction = 6;
-                      isFinished = false;
-                      isFinishedFavourite = false;
-                      needRestartFavourite = true;
-                    });
-                    (selected == 1) ? _loadData() : addDataToFavourite();
-                    Navigator.of(context).pop();
-                  },
-                  child: const Text('Guzvi(↓)'),
-                ),
-              ],
-            ),
-            Column(
-              children: [
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor:
-                        (sortAction == 8) ? Colors.red : Colors.blue,
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      sortAction = 8;
-                      isFinished = false;
-                      isFinishedFavourite = false;
-                      needRestartFavourite = true;
-                    });
-                    (selected == 1) ? _loadData() : addDataToFavourite();
-                    Navigator.of(context).pop();
-                  },
-                  child: const Text('Posecenosti(↑)'),
-                ),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor:
-                        (sortAction == 7) ? Colors.red : Colors.blue,
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      sortAction = 7;
-                      isFinished = false;
-                      isFinishedFavourite = false;
-                      needRestartFavourite = true;
-                    });
-                    (selected == 1) ? _loadData() : addDataToFavourite();
-                    Navigator.of(context).pop();
-                  },
-                  child: const Text('Posecenosti(↓)'),
-                ),
-              ],
-            ),
-          ],
-        ),
-        const SizedBox(
-          height: 10,
-        ),
-        const Text('Tipovi hrane i pica'),
-        const SizedBox(
-          height: 10,
-        ),
-        Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: (productFilters.contains('Kafa'))
-                        ? Colors.red
-                        : Colors.blue,
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      if (productFilters.contains('Kafa')) {
-                        productFilters.remove('Kafa');
-                      } else {
-                        productFilters.add('Kafa');
-                      }
-                    });
-                  },
-                  child: const Text(
-                    'Kafa',
-                  ),
-                ),
-                ElevatedButton(
-                  onPressed: () {},
-                  child: const Text(
-                    'Pivo',
-                  ),
-                ),
-                ElevatedButton(
-                  onPressed: () {},
-                  child: const Text(
-                    'Sokovi',
-                  ),
-                ),
-                ElevatedButton(
-                  onPressed: () {},
-                  child: const Text(
-                    'Vino',
-                  ),
-                ),
-                ElevatedButton(
-                  onPressed: () {},
-                  child: const Text(
-                    'Ribe',
-                  ),
-                ),
-              ],
-            )
-          ],
-        )
-      ],
-    );
-  }
-
-  // ignore: non_constant_identifier_names
   Widget AllRestaurantsMethod() {
     return RestaurantsView(restaurants);
   }
 
+  // ignore: non_constant_identifier_names
   Widget FavouriteRestaurantsMethod() {
     return RestaurantsView(favouriteRestaurants);
   }
@@ -884,6 +722,320 @@ class _RestaurantsListState extends State<RestaurantsList> {
           );
         },
       ),
+    );
+  }
+}
+
+// ignore: must_be_immutable
+class AdditionalFilters extends StatefulWidget {
+  List<String> productsFilter;
+  final Function(String) setProductsFilter;
+  final Function(String) checkProductsFilterColor;
+  AdditionalFilters({
+    super.key,
+    required this.productsFilter,
+    required this.setProductsFilter,
+    required this.checkProductsFilterColor,
+  });
+
+  @override
+  // ignore: library_private_types_in_public_api
+  _AdditionalFiltersState createState() => _AdditionalFiltersState();
+}
+
+class _AdditionalFiltersState extends State<AdditionalFilters> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        const SizedBox(
+          height: 20,
+        ),
+        const Text('Tipovi hrane i pica'),
+        const SizedBox(
+          height: 10,
+        ),
+        Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: widget.checkProductsFilterColor('coffee'),
+                  ),
+                  onPressed: () async {
+                    widget.setProductsFilter('coffee');
+                    setState(() {});
+                    //await _RestaurantsListState()._loadData();
+                  },
+                  child: const Text(
+                    'Kafa',
+                  ),
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: widget.checkProductsFilterColor('beer'),
+                  ),
+                  onPressed: () {
+                    widget.setProductsFilter('beer');
+                    setState(() {});
+                  },
+                  child: const Text(
+                    'Pivo',
+                  ),
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: widget.checkProductsFilterColor('juice'),
+                  ),
+                  onPressed: () {
+                    widget.setProductsFilter('juice');
+                    setState(() {});
+                  },
+                  child: const Text(
+                    'Sokovi',
+                  ),
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: widget.checkProductsFilterColor('wine'),
+                  ),
+                  onPressed: () {
+                    widget.setProductsFilter('wine');
+                    setState(() {});
+                  },
+                  child: const Text(
+                    'Vino',
+                  ),
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: widget.checkProductsFilterColor('fish'),
+                  ),
+                  onPressed: () {
+                    widget.setProductsFilter('fish');
+                    setState(() {});
+                  },
+                  child: const Text(
+                    'Ribe',
+                  ),
+                ),
+              ],
+            )
+          ],
+        )
+      ],
+    );
+  }
+}
+
+// ignore: must_be_immutable
+class RestaurantFilter extends StatefulWidget {
+  int sortAction;
+  bool isFinished;
+  bool isFinishedFavourite;
+  bool needRestartFavourite;
+  final Function() loadData;
+  final Function() addDataToFavourite;
+  final Function(int) setSortAction;
+  final Function(bool) setIsFinished;
+  final Function(bool) setIsFinishedFavourite;
+  final Function(bool) setNeedRestartFavourite;
+
+  RestaurantFilter({
+    super.key,
+    required this.sortAction,
+    required this.isFinished,
+    required this.isFinishedFavourite,
+    required this.needRestartFavourite,
+    required this.loadData,
+    required this.addDataToFavourite,
+    required this.setSortAction,
+    required this.setIsFinished,
+    required this.setIsFinishedFavourite,
+    required this.setNeedRestartFavourite,
+  });
+
+  @override
+  State<RestaurantFilter> createState() => _RestaurantFilterState();
+}
+
+class _RestaurantFilterState extends State<RestaurantFilter> {
+  void changeFunctionsValue() {
+    widget.setSortAction(widget.sortAction);
+    widget.setIsFinished(widget.isFinished);
+    widget.setIsFinishedFavourite(widget.isFinishedFavourite);
+    widget.setNeedRestartFavourite(widget.needRestartFavourite);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        const SizedBox(
+          height: 20,
+        ),
+        const Text('Sortiraj prema'),
+        const SizedBox(
+          height: 10,
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Column(
+              children: [
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor:
+                        (widget.sortAction == 1) ? Colors.red : Colors.blue,
+                  ),
+                  onPressed: () async {
+                    setState(() {
+                      widget.sortAction = 1;
+                      widget.isFinished = false;
+                      widget.isFinishedFavourite = false;
+                      widget.needRestartFavourite = true;
+                    });
+                    changeFunctionsValue();
+                  },
+                  child: const Text('Blizini(↑)'),
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor:
+                        (widget.sortAction == 2) ? Colors.red : Colors.blue,
+                  ),
+                  onPressed: () async {
+                    setState(() {
+                      widget.sortAction = 2;
+                      widget.isFinished = false;
+                      widget.isFinishedFavourite = false;
+                      widget.needRestartFavourite = true;
+                    });
+                    changeFunctionsValue();
+                  },
+                  child: const Text('Blizini(↓)'),
+                ),
+              ],
+            ),
+            Column(
+              children: [
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor:
+                        (widget.sortAction == 3) ? Colors.red : Colors.blue,
+                  ),
+                  onPressed: () async {
+                    setState(() {
+                      widget.sortAction = 3;
+                      widget.isFinished = false;
+                      widget.isFinishedFavourite = false;
+                      widget.needRestartFavourite = true;
+                    });
+                    changeFunctionsValue();
+                  },
+                  child: const Text('Oceni(↑)'),
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor:
+                        (widget.sortAction == 4) ? Colors.red : Colors.blue,
+                  ),
+                  onPressed: () async {
+                    setState(() {
+                      widget.sortAction = 4;
+                      widget.isFinished = false;
+                      widget.isFinishedFavourite = false;
+                      widget.needRestartFavourite = true;
+                    });
+                    changeFunctionsValue();
+                  },
+                  child: const Text('Oceni(↓)'),
+                ),
+              ],
+            ),
+            Column(
+              children: [
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor:
+                        (widget.sortAction == 5) ? Colors.red : Colors.blue,
+                  ),
+                  onPressed: () async {
+                    setState(() {
+                      widget.sortAction = 5;
+                      widget.isFinished = false;
+                      widget.isFinishedFavourite = false;
+                      widget.needRestartFavourite = true;
+                    });
+                    changeFunctionsValue();
+                  },
+                  child: const Text('Guzvi(↑)'),
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor:
+                        (widget.sortAction == 6) ? Colors.red : Colors.blue,
+                  ),
+                  onPressed: () async {
+                    setState(() {
+                      widget.sortAction = 6;
+                      widget.isFinished = false;
+                      widget.isFinishedFavourite = false;
+                      widget.needRestartFavourite = true;
+                    });
+                    changeFunctionsValue();
+                  },
+                  child: const Text('Guzvi(↓)'),
+                ),
+              ],
+            ),
+            Column(
+              children: [
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor:
+                        (widget.sortAction == 8) ? Colors.red : Colors.blue,
+                  ),
+                  onPressed: () async {
+                    setState(() {
+                      widget.sortAction = 8;
+                      widget.isFinished = false;
+                      widget.isFinishedFavourite = false;
+                      widget.needRestartFavourite = true;
+                    });
+                    changeFunctionsValue();
+                  },
+                  child: const Text('Posecenosti(↑)'),
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor:
+                        (widget.sortAction == 7) ? Colors.red : Colors.blue,
+                  ),
+                  onPressed: () async {
+                    setState(() {
+                      widget.sortAction = 7;
+                      widget.isFinished = false;
+                      widget.isFinishedFavourite = false;
+                      widget.needRestartFavourite = true;
+                    });
+                    changeFunctionsValue();
+                  },
+                  child: const Text('Posecenosti(↓)'),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ],
     );
   }
 }
