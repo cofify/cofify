@@ -1,10 +1,8 @@
 import 'package:cofify/screens/parts/restaurantList/loading_restaurants_view.dart';
 import 'package:cofify/screens/parts/restaurantList/pill_buttons.dart';
-import 'package:cofify/screens/parts/restaurantList/restaurant_card.dart';
 import 'package:cofify/screens/parts/restaurantList/restaurants_view.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shimmer/shimmer.dart';
 
 // widgets
 
@@ -12,12 +10,9 @@ import 'package:shimmer/shimmer.dart';
 import 'package:cofify/models/restaurants.dart';
 
 // services
-import 'package:cofify/services/auth_service.dart';
-import 'package:cofify/services/user_database_service.dart';
 
 import '../../../providers/page_track_provider.dart';
 import '../common/common_widget_imports.dart';
-import 'restaurant_loading_card.dart';
 
 class RestaurantList extends StatelessWidget {
   final GlobalKey<PillButtonsFrontClippedTextState> pillKey =
@@ -31,10 +26,6 @@ class RestaurantList extends StatelessWidget {
     final restaurants = Provider.of<List<Restaurant>>(context);
     final pageController = Provider.of<PillButtonPageTracker>(context);
 
-    final authService = AuthService.firebase();
-    DatabaseService dbService =
-        DatabaseService(uid: authService.currentUser!.uid);
-
     return Scaffold(
       body: SafeArea(
         child: NestedScrollView(
@@ -42,7 +33,7 @@ class RestaurantList extends StatelessWidget {
             return [
               SliverAppBar(
                 backgroundColor: Colors.grey[50],
-                toolbarHeight: 240,
+                toolbarHeight: 180,
                 floating: true,
                 snap: true,
                 flexibleSpace: Column(
@@ -51,18 +42,51 @@ class RestaurantList extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const SearchBox(
+                        SearchBox(
                           withFilters: true,
                           widthPercentage: 0.7,
+                          function: () {},
                         ),
                         const SizedBox(width: 15),
                         InkWell(
                           onTap: () {
                             Navigator.of(context).pushNamed('/account');
                           },
-                          child: const Hero(
+                          child: Hero(
+                            flightShuttleBuilder: (
+                              flightContext,
+                              animation,
+                              flightDirection,
+                              fromHeroContext,
+                              toHeroContext,
+                            ) {
+                              switch (flightDirection) {
+                                // when push to new page
+                                case HeroFlightDirection.push:
+                                  return Material(
+                                    color: Colors.transparent,
+                                    child: ScaleTransition(
+                                      scale: animation.drive(
+                                        Tween<double>(begin: 0, end: 1).chain(
+                                          CurveTween(
+                                            curve: Curves.fastOutSlowIn,
+                                          ),
+                                        ),
+                                      ),
+                                      child: toHeroContext.widget,
+                                    ),
+                                  );
+
+                                // when return from new page
+                                case HeroFlightDirection.pop:
+                                  return Material(
+                                    color: Colors.transparent,
+                                    child: fromHeroContext.widget,
+                                  );
+                              }
+                            },
                             tag: 'restaurant-settings-UserAvatar',
-                            child: UserAvatar(),
+                            child: const UserAvatar(),
                           ),
                         )
                       ],
@@ -70,7 +94,6 @@ class RestaurantList extends StatelessWidget {
                     const SizedBox(height: 20.0),
                     PillButtons(
                         pillKey: pillKey, pageController: pageController),
-                    const SizedBox(height: 20.0),
                     // const Test(),
                   ],
                 ),

@@ -36,22 +36,11 @@ class PillButtons extends StatelessWidget {
               ),
               child: PillButtonsContent(pageController: pageController),
             ),
-            AnimatedPositioned(
-              duration: const Duration(milliseconds: 250),
-              curve: Curves.easeInOut,
-              left: (pageController.selectedIndex == 0) ? 0 : 120,
-              child: Container(
-                width: 120,
-                height: 53,
-                decoration: BoxDecoration(
-                  color: Theme.of(context).primaryColor,
-                  borderRadius: BorderRadius.circular(50),
-                ),
-              ),
+            Positioned(
+              child: PillButtonsFrontClippedText(key: pillKey),
             ),
           ],
         ),
-        PillButtonsFrontClippedText(key: pillKey),
       ],
     );
   }
@@ -143,6 +132,8 @@ class PillButtonsContent extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         InkWell(
+          highlightColor: Colors.transparent,
+          splashColor: Colors.transparent,
           onTap: () {
             pageController.setCurrentPage(0);
           },
@@ -161,6 +152,8 @@ class PillButtonsContent extends StatelessWidget {
           ),
         ),
         InkWell(
+          highlightColor: Colors.transparent,
+          splashColor: Colors.transparent,
           onTap: () {
             pageController.setCurrentPage(1);
           },
@@ -193,36 +186,40 @@ class PillButtonsClipperContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        SizedBox(
-          width: 120,
-          child: Center(
-            child: Text(
-              "Omiljeni",
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
+    return Container(
+      color: Theme.of(context).primaryColor,
+      height: 53,
+      child: const Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 120,
+            child: Center(
+              child: Text(
+                "Omiljeni",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ),
-        ),
-        SizedBox(
-          width: 120,
-          child: Center(
-            child: Text(
-              "Svi",
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
+          SizedBox(
+            width: 120,
+            child: Center(
+              child: Text(
+                "Svi",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

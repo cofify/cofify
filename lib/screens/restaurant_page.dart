@@ -1,15 +1,11 @@
 import 'package:cofify/screens/parts/common/restaurant_card_bottom_row_info.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
 
 // widgets
-import '../util/helper_functions.dart';
 import 'parts/common/common_widget_imports.dart';
 
 // models
 import '../models/restaurants.dart';
-import '../models/restaurant_route_data.dart';
 
 class RestaurantPage extends StatelessWidget {
   const RestaurantPage({
@@ -19,7 +15,6 @@ class RestaurantPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final heroContainerMargin = screenWidth * 0.1;
 
     final Restaurant routeData =
         ModalRoute.of(context)?.settings.arguments as Restaurant;

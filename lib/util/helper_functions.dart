@@ -20,8 +20,8 @@ class HelperFunctionsFactory {
     totalTime = totalTime ~/ 60;
     int timeInHours = totalTime % 60;
 
-    if (timeInHours > 0) return '${timeInHours}h ${timeInMinutes} min';
-    if (timeInMinutes > 0) return '${timeInMinutes} min';
+    if (timeInHours > 0) return '${timeInHours}h $timeInMinutes min';
+    if (timeInMinutes > 0) return '$timeInMinutes min';
     return '${timeInSeconds}s';
   }
 }

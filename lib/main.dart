@@ -1,5 +1,3 @@
-import 'package:cofify/models/restaurant_route_data.dart';
-import 'package:cofify/screens/restaurant_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';

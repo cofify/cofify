@@ -1,8 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-
-import 'package:cofify/models/restaurant_route_data.dart';
-import 'package:cofify/util/helper_functions.dart';
 
 // widgets
 import '../common/restaurant_card_bottom_row_info.dart';
@@ -84,75 +80,93 @@ class _RestaurantCardState extends State<RestaurantCard> {
                   const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
               child: Hero(
                 tag: "restaurantlist-restaurant-hero${widget.restaurant.uid}",
-                child: Material(
-                  color: Colors.transparent,
-                  child: Column(
-                    children: [
-                      // Heading
-                      IconAndText(
-                        text: widget.restaurant.name,
-                        icon: widget.restaurant.isFavourite
-                            ? "assets/icons/HeartFull.svg"
-                            : "assets/icons/HeartEmpty.svg",
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.baseline,
-                        textBaseline: TextBaseline.alphabetic,
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                        iconFirst: false,
-                        iconAction: () async {
-                          if (authService.currentUser!.uid.isNotEmpty) {
-                            if (widget.restaurant.isFavourite) {
-                              await dbService.removeRestaurantFromFavourite(
-                                  widget.restaurant.uid);
-                            } else {
-                              await dbService.addRestourantToFavourite(
-                                  widget.restaurant.uid);
-                            }
-                            setState(() {
-                              widget.restaurant.isFavourite =
-                                  !widget.restaurant.isFavourite;
-                            });
+                flightShuttleBuilder: (
+                  flightContext,
+                  animation,
+                  flightDirection,
+                  fromHeroContext,
+                  toHeroContext,
+                ) {
+                  switch (flightDirection) {
+                    // when switching to the restaurant screen
+                    case HeroFlightDirection.push:
+                      return Material(
+                        color: Colors.transparent,
+                        child: toHeroContext.widget,
+                      );
+                    // when going back to this screen
+                    case HeroFlightDirection.pop:
+                      return Material(
+                        color: Colors.transparent,
+                        child: fromHeroContext.widget,
+                      );
+                  }
+                },
+                child: Column(
+                  children: [
+                    // Heading
+                    IconAndText(
+                      text: widget.restaurant.name,
+                      icon: widget.restaurant.isFavourite
+                          ? "assets/icons/HeartFull.svg"
+                          : "assets/icons/HeartEmpty.svg",
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.baseline,
+                      textBaseline: TextBaseline.alphabetic,
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      iconFirst: false,
+                      iconAction: () async {
+                        if (authService.currentUser!.uid.isNotEmpty) {
+                          if (widget.restaurant.isFavourite) {
+                            await dbService.removeRestaurantFromFavourite(
+                                widget.restaurant.uid);
                           } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text(
-                                    'Morate biti prijavljeni da bi dodali restoran u omiljene'),
-                              ),
-                            );
+                            await dbService.addRestourantToFavourite(
+                                widget.restaurant.uid);
                           }
-                        },
+                          setState(() {
+                            widget.restaurant.isFavourite =
+                                !widget.restaurant.isFavourite;
+                          });
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                  'Morate biti prijavljeni da bi dodali restoran u omiljene'),
+                            ),
+                          );
+                        }
+                      },
+                    ),
+
+                    const SizedBox(height: 4),
+
+                    // Location
+                    IconAndText(
+                      text: widget.restaurant.location,
+                      fontSize: 18.0,
+                      icon: "assets/icons/Location.svg",
+                      iconSize: 18.0,
+                      iconAction: () {},
+                    ),
+
+                    const SizedBox(height: 4),
+
+                    // Description
+                    Text(
+                      widget.restaurant.description,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        color: Color(0xFFADA4A6),
                       ),
+                    ),
 
-                      const SizedBox(height: 4),
+                    const SizedBox(height: 12),
 
-                      // Location
-                      IconAndText(
-                        text: widget.restaurant.location,
-                        fontSize: 18.0,
-                        icon: "assets/icons/Location.svg",
-                        iconSize: 18.0,
-                        iconAction: () {},
-                      ),
-
-                      const SizedBox(height: 4),
-
-                      // Description
-                      Text(
-                        widget.restaurant.description,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          color: Color(0xFFADA4A6),
-                        ),
-                      ),
-
-                      const SizedBox(height: 12),
-
-                      // Bottom row with info
-                      RestaurantCardBottomRowInfo(
-                          restaurant: widget.restaurant),
-                    ],
-                  ),
+                    // Bottom row with info
+                    RestaurantCardBottomRowInfo(restaurant: widget.restaurant),
+                  ],
                 ),
               ),
             ),
