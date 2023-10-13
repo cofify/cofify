@@ -1,6 +1,7 @@
 // ignore_for_file: unused_import
 
 import 'package:cofify/models/user.dart';
+import 'package:cofify/screens/account.dart';
 import 'package:cofify/screens/choose_city.dart';
 import 'package:cofify/screens/loadingScreen.dart';
 // import 'package:cofify/screens/home.dart';
@@ -36,8 +37,8 @@ class Wrapper extends StatelessWidget {
 
     if (user.uid == '') {
       log("ovde sam");
-      return const LoginScreen();
-      // return const HomePage();
+      // return const LoginScreen();
+      return const WelecomePage();
     } else {
       // if (user.isVerified) {
       //   //return const UserProfile();
@@ -48,7 +49,8 @@ class Wrapper extends StatelessWidget {
       // }
 
       //return const HomePage();
-      return const RestaurantsView();
+      // return const RestaurantsView();
+      return const Account();
       //return const ChooseCity();
     }
   }

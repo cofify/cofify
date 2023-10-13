@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sliding_sheet/sliding_sheet.dart';
 
 // widgets
 import '../screens/parts/common/common_widget_imports.dart';
@@ -27,10 +28,15 @@ class Account extends StatelessWidget {
                 const OptionsSection(),
               ],
             ),
-            const Padding(
-              padding: EdgeInsets.only(bottom: 16.0),
-              child: Center(
-                child: Text("Uslovi koriscenja"),
+            InkWell(
+              onTap: () {
+                CommonFunctions().termsOfServiceBottomSheet(context);
+              },
+              child: const Center(
+                child: Padding(
+                  padding: EdgeInsets.all(16),
+                  child: Text("Uslovi koriscenja"),
+                ),
               ),
             ),
           ],

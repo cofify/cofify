@@ -8,3 +8,4 @@ export 'app_bar.dart';
 export 'icon_and_text.dart';
 export 'shimmer_item.dart';
 export 'user_avatar.dart';
+export 'common_functions.dart';
