@@ -141,6 +141,24 @@ class RestaurantDatabaseService {
     );
   }
 
+  Future<List<String>> getRestauratnsWithProducts(List<String> products) async {
+    List<String> restaurantsWithProducts = [];
+    QuerySnapshot restaurantSnapshot = await restaurantsCollection.get();
+    for (QueryDocumentSnapshot restaurantDoc in restaurantSnapshot.docs) {
+      QuerySnapshot productsSnapshot =
+          await restaurantDoc.reference.collection('products').get();
+      List<String> productNames =
+          productsSnapshot.docs.map((productDoc) => productDoc.id).toList();
+
+      bool hasAllProducts =
+          products.every((product) => productNames.contains(product));
+      if (hasAllProducts) {
+        restaurantsWithProducts.add(restaurantDoc.id);
+      }
+    }
+    return restaurantsWithProducts;
+  }
+
   // vraca listu restorana na osnovu prosledjenog query-a
   Future<List<Restaurant>> _getSelectedRestauratns(
     Query query,
@@ -160,6 +178,7 @@ class RestaurantDatabaseService {
     bool favourite,
     DocumentSnapshot? documentSnapshot,
     int restaurantsPerPage,
+    List<String> productsFilter,
   ) async {
     try {
       final userCity = await getSelectedCity();
@@ -169,17 +188,44 @@ class RestaurantDatabaseService {
         isEqualTo: userCity,
       );
 
+      if (productsFilter.isNotEmpty && !favourite) {
+        List<String> restaurantsWithProducts =
+            await getRestauratnsWithProducts(productsFilter);
+        if (restaurantsWithProducts.isNotEmpty) {
+          query = query.where(
+            'id',
+            whereIn: restaurantsWithProducts,
+          );
+        }
+      }
       if (favourite) {
         List<String> myFavouriteRestaurants =
             await DatabaseService(uid: _auth.currentUser!.uid)
                 .getFavouriteRestourants();
-        if (myFavouriteRestaurants.isNotEmpty) {
-          query = query.where(
-            'id',
-            whereIn: myFavouriteRestaurants,
-          );
+        if (productsFilter.isNotEmpty) {
+          List<String> restaurantsWithProducts =
+              await getRestauratnsWithProducts(productsFilter);
+          List<String> presek = myFavouriteRestaurants
+              .toSet()
+              .intersection(restaurantsWithProducts.toSet())
+              .toList();
+          if (presek.isNotEmpty) {
+            query = query.where(
+              'id',
+              whereIn: presek,
+            );
+          } else {
+            return [];
+          }
         } else {
-          return [];
+          if (myFavouriteRestaurants.isNotEmpty) {
+            query = query.where(
+              'id',
+              whereIn: myFavouriteRestaurants,
+            );
+          } else {
+            return [];
+          }
         }
       }
 
@@ -272,12 +318,7 @@ class RestaurantDatabaseService {
   // Stream liste restorana
   Stream<List<Restaurant>> get restaurants {
     return restaurantsCollection.snapshots().asyncMap((snapshot) async {
-      return await getRestaurants(
-        0,
-        false,
-        null,
-        3,
-      );
+      return await getRestaurants(0, false, null, 3, []);
     });
   }
 
