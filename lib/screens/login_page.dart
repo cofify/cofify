@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-import 'parts/shared_widget_imports.dart';
+import 'parts/common/common_widget_imports.dart';
 
 // widgets
-import 'parts/text_divider.dart';
+import 'parts/common/text_divider.dart';
 
 // other
 import '../services/auth_service.dart';
@@ -50,6 +50,13 @@ class LoginScreen extends StatelessWidget {
                     );
                   },
                   buttonText: "Prijavi se",
+                ),
+                // TODO Izbrisi ovo dugme, samo za testing postoji
+                RegularButton(
+                  onPress: () async {
+                    await auth.signInAnon();
+                  },
+                  buttonText: "Nastavite kao gost",
                 ),
                 const SizedBox(height: 20),
               ],

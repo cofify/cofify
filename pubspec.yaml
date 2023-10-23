@@ -52,6 +52,7 @@ dependencies:
   permission_handler: ^11.0.0
   flutter_svg: ^2.0.7
   shimmer: ^3.0.0
+  sliding_sheet: ^0.5.2
   cached_network_image: ^3.2.3
   image_picker: ^1.0.4
   
@@ -102,6 +103,10 @@ flutter:
     - assets/icons/NotActiveDot.svg
     - assets/icons/ActiveDot.svg
     - assets/icons/Star.svg
+    - assets/icons/AnonimusUser.svg
+    - assets/icons/lunch_dining.svg
+    - assets/icons/settings.svg
+    - assets/icons/switch_account.svg
     
 
   # An image asset can refer to one or more resolution-specific "variants", see

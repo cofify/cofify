@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 // widgets
-import 'parts/shared_widget_imports.dart';
-import 'parts/city_list.dart';
-import 'parts/result_not_found.dart';
+import 'parts/common/common_widget_imports.dart';
+import 'parts/settings/city_list.dart';
+import 'parts/common/result_not_found.dart';
 
 // models
 import '../providers/search_provider.dart';
@@ -21,16 +21,32 @@ class ChooseCity extends StatelessWidget {
     DatabaseService dbService = DatabaseService(uid: auth.currentUser!.uid);
 
     return Scaffold(
-      appBar: const CommonAppBar(text: "Izaberite Grad"),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.only(top: 16.0),
-          child: Stack(
+      appBar: const CommonAppBar(
+        text: 'Izaberite Grad',
+      ),
+      body: SafeArea(
+        child: NestedScrollView(
+          headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+            return [
+              SliverAppBar(
+                backgroundColor: Colors.grey[50],
+                toolbarHeight: 100,
+                floating: true,
+                snap: true,
+                flexibleSpace: Column(
+                  children: [
+                    const SizedBox(height: 20),
+                    SearchBox(dataProvider: searchDataProvider),
+                  ],
+                ),
+              ),
+            ];
+          },
+          body: Stack(
             children: [
               Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  SearchBox(dataProvider: searchDataProvider),
                   const SizedBox(height: 16),
                   Expanded(
                     child: Center(
@@ -66,6 +82,7 @@ class ChooseCity extends StatelessWidget {
                   ),
                   child: Center(
                     child: ThinWideButton(
+                      // TODO Proveri da li pushNamedAndRemoveUntil radi kako treba
                       onPress: () async {
                         dbService.saveCityLocaly(
                             searchDataProvider.getSelectedCity());

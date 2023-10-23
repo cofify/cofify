@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 // widgets
-import 'shared_widget_imports.dart';
+import 'common_widget_imports.dart';
 
 class FatWideButton extends StatelessWidget {
   final String buttonText;

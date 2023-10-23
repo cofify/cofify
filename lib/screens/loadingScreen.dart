@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
-import 'package:cofify/models/user.dart';
-
-import 'parts/big_heading_text.dart';
-import 'parts/big_paragraph_text.dart';
+import 'parts/home/big_heading_text.dart';
+import 'parts/home/big_paragraph_text.dart';
 
 // TODO Razmisli kako ovaj ekran funckionise uopste
-class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+class LoadingScreen extends StatelessWidget {
+  const LoadingScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

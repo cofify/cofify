@@ -5,7 +5,7 @@ import 'svg_icon.dart';
 import 'box_shadows.dart';
 
 // models
-import '../../providers/search_provider.dart';
+import '../../../providers/search_provider.dart';
 
 /// Koristi se za pretragu elementa neke liste
 /// SearchProvider odlucuje koj provajder ce da se koristi u pretrazu
@@ -19,16 +19,20 @@ class SearchBox extends StatelessWidget {
   /// Provajder koji se koristi pri pretrazi
   final SearchProvider? dataProvider;
 
-  const SearchBox({
-    super.key,
-    this.dataProvider,
-    this.withFilters = false,
-    this.function,
-  });
+  /// Velicina u procentima zauzetog dela ekrana, default 0.8
+  final double widthPercentage;
+
+  const SearchBox(
+      {super.key,
+      this.dataProvider,
+      this.withFilters = false,
+      this.function,
+      this.widthPercentage = 0.8});
 
   @override
   Widget build(BuildContext context) {
-    final double widgetSize = MediaQuery.of(context).size.width * 0.8;
+    final double widgetSize =
+        MediaQuery.of(context).size.width * widthPercentage;
 
     return Container(
       width: widgetSize,

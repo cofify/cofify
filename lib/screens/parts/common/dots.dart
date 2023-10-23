@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../providers/dots_track_provider.dart';
+import '../../../providers/page_track_provider.dart';
 
 /// Reusable komponenta, prikazuje tri tacke kao indikator
 /// selektovane komponente
@@ -13,7 +13,7 @@ class Dots extends StatelessWidget {
   final double activeDotSize;
 
   /// Prosledi provajdera kog ce widget da koristi
-  final DotsTrackProvider dotsTrackProvider;
+  final PageTrackProviders dotsTrackProvider;
 
   const Dots({
     super.key,

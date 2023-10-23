@@ -10,7 +10,7 @@ import 'package:cofify/firebase_options.dart';
 import 'package:cofify/models/user.dart';
 import 'package:cofify/services/auth_service.dart';
 
-import 'providers/dots_track_provider.dart';
+import 'providers/page_track_provider.dart';
 import 'providers/search_provider.dart';
 
 // other
@@ -27,6 +27,7 @@ void main() async {
     providers: [
       ChangeNotifierProvider(create: (_) => ThemeManager()),
       ChangeNotifierProvider(create: (_) => PageTracker()),
+      ChangeNotifierProvider(create: (_) => PillButtonPageTracker()),
       ChangeNotifierProvider(create: (_) => ChooseCityDataProvider()),
     ],
     child: const MyApp(),

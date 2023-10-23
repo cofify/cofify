@@ -1,4 +1,5 @@
 import 'package:cofify/providers/auth_exceptions.dart';
+import 'package:cofify/screens/parts/common/app_bar.dart';
 import 'package:cofify/services/auth_service.dart';
 import 'package:flutter/material.dart';
 
@@ -43,130 +44,140 @@ class _RegisterViewState extends State<RegisterView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Registracija'),
-      ),
+      appBar: const CommonAppBar(text: "Registracija"),
       body: Center(
-        child: ListView(padding: const EdgeInsets.all(16.0), children: [
-          Column(
+        child: ListView(
+            padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 16.0),
             children: [
-              TextFormField(
-                keyboardType: TextInputType.name,
-                controller: nameController,
-                decoration: const InputDecoration(
-                  labelText: 'Ime',
-                  hintText: 'Petar',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              const SizedBox(height: 20),
-              TextFormField(
-                keyboardType: TextInputType.name,
-                controller: surnameController,
-                decoration: const InputDecoration(
-                  labelText: 'Prezime',
-                  hintText: 'Petrovic',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              const SizedBox(height: 20),
-              TextFormField(
-                keyboardType: TextInputType.name,
-                controller: emailController,
-                decoration: const InputDecoration(
-                  labelText: 'Email adresa',
-                  hintText: 'petar.petrovic@gmail.com',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              const SizedBox(height: 20),
-              TextFormField(
-                keyboardType: TextInputType.visiblePassword,
-                controller: passwordController,
-                obscureText: true,
-                decoration: const InputDecoration(
-                  labelText: 'Lozinka',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              const SizedBox(height: 20),
-              TextFormField(
-                keyboardType: TextInputType.visiblePassword,
-                controller: repeatedPasswordController,
-                obscureText: true,
-                decoration: const InputDecoration(
-                  labelText: 'Ponovite lozinku',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              const SizedBox(height: 20),
-              SizedBox(
-                width: MediaQuery.of(context).size.width,
-                height: 50,
-                child: ElevatedButton(
-                  onPressed: () async {
-                    final email = emailController.text;
-                    final password = passwordController.text;
-                    final name = nameController.text;
-                    final surname = surnameController.text;
-                    final repeated = repeatedPasswordController.text;
+              Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextFormField(
+                      keyboardType: TextInputType.name,
+                      controller: nameController,
+                      cursorColor: Colors.black,
+                      decoration: InputDecoration(
+                        hintText: 'Petar',
+                        filled: true,
+                        fillColor: const Color(0xFFF6F6F6),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(16.0),
+                          borderSide: BorderSide.none,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    TextFormField(
+                      keyboardType: TextInputType.name,
+                      controller: surnameController,
+                      decoration: const InputDecoration(
+                        labelText: 'Prezime',
+                        hintText: 'Petrovic',
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    TextFormField(
+                      keyboardType: TextInputType.name,
+                      controller: emailController,
+                      decoration: const InputDecoration(
+                        labelText: 'Email adresa',
+                        hintText: 'petar.petrovic@gmail.com',
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    TextFormField(
+                      keyboardType: TextInputType.visiblePassword,
+                      controller: passwordController,
+                      obscureText: true,
+                      decoration: const InputDecoration(
+                        labelText: 'Lozinka',
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    TextFormField(
+                      keyboardType: TextInputType.visiblePassword,
+                      controller: repeatedPasswordController,
+                      obscureText: true,
+                      decoration: const InputDecoration(
+                        labelText: 'Ponovite lozinku',
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width,
+                      height: 50,
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          final email = emailController.text;
+                          final password = passwordController.text;
+                          final name = nameController.text;
+                          final surname = surnameController.text;
+                          final repeated = repeatedPasswordController.text;
 
-                    if (name.isEmpty) {
-                      error = 'Ime je obavezno!';
-                      setState(() {});
-                      return;
-                    } else if (surname.isEmpty) {
-                      error = 'Prezime je obavezno';
-                      setState(() {});
-                      return;
-                    } else if (email.isEmpty) {
-                      error = 'Email adresa je obavezna';
-                      setState(() {});
-                      return;
-                    } else if (password.isEmpty) {
-                      error = 'Lozinka je obavezna';
-                      setState(() {});
-                      return;
-                    } else if (repeated.isEmpty) {
-                      error = 'Morate ponovo uneti lozinku';
-                      setState(() {});
-                      return;
-                    } else if (repeated != password) {
-                      error = 'Lozinke se moraju poklapati';
-                      setState(() {});
-                      return;
-                    }
-                    try {
-                      await auth.signUpEmailPass(
-                        email,
-                        password,
-                        name,
-                        surname,
-                      );
-                      Navigator.of(context).pop();
-                    } catch (e) {
-                      if (e is WeakPasswordAuthException) {
-                        error = 'Slaba lozinka';
-                      } else if (e is EmailAlreadyInUseAuthException) {
-                        error = 'Vec postoji nalog sa ovom email adresom.';
-                      } else if (e is InvalidEmailAuthException) {
-                        error = 'Neispravna email adresa';
-                      } else {
-                        error = 'Doslo je do greske, molimo pokusajte kasnije';
-                      }
-                      setState(() {});
-                    }
-                  },
-                  child: const Text('Registracija'),
+                          if (name.isEmpty) {
+                            error = 'Ime je obavezno!';
+                            setState(() {});
+                            return;
+                          } else if (surname.isEmpty) {
+                            error = 'Prezime je obavezno';
+                            setState(() {});
+                            return;
+                          } else if (email.isEmpty) {
+                            error = 'Email adresa je obavezna';
+                            setState(() {});
+                            return;
+                          } else if (password.isEmpty) {
+                            error = 'Lozinka je obavezna';
+                            setState(() {});
+                            return;
+                          } else if (repeated.isEmpty) {
+                            error = 'Morate ponovo uneti lozinku';
+                            setState(() {});
+                            return;
+                          } else if (repeated != password) {
+                            error = 'Lozinke se moraju poklapati';
+                            setState(() {});
+                            return;
+                          }
+                          try {
+                            await auth.signUpEmailPass(
+                              email,
+                              password,
+                              name,
+                              surname,
+                            );
+                            Navigator.of(context).pop();
+                          } catch (e) {
+                            if (e is WeakPasswordAuthException) {
+                              error = 'Slaba lozinka';
+                            } else if (e is EmailAlreadyInUseAuthException) {
+                              error =
+                                  'Vec postoji nalog sa ovom email adresom.';
+                            } else if (e is InvalidEmailAuthException) {
+                              error = 'Neispravna email adresa';
+                            } else {
+                              error =
+                                  'Doslo je do greske, molimo pokusajte kasnije';
+                            }
+                            setState(() {});
+                          }
+                        },
+                        child: const Text('Registracija'),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    Text(
+                      error,
+                    ),
+                  ],
                 ),
               ),
-              const SizedBox(height: 20),
-              Text(
-                error,
-              ),
-            ],
-          ),
-        ]),
+            ]),
       ),
     );
   }

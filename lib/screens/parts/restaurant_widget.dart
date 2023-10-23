@@ -1,11 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cofify/models/restaurants.dart';
+import 'package:cofify/screens/parts/restaurantList/restaurant_list.dart';
 import 'package:cofify/services/auth_service.dart';
 import 'package:cofify/services/restaurants_database_service.dart';
 import 'package:cofify/services/user_database_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+
+import '../../providers/page_track_provider.dart';
+import 'common/common_widget_imports.dart';
+import 'restaurantList/pill_buttons.dart';
 
 class RestaurantsList extends StatefulWidget {
   const RestaurantsList({super.key});
@@ -15,6 +20,9 @@ class RestaurantsList extends StatefulWidget {
 }
 
 class _RestaurantsListState extends State<RestaurantsList> {
+  final GlobalKey<PillButtonsFrontClippedTextState> pillKey =
+      GlobalKey<PillButtonsFrontClippedTextState>();
+
   final authService = AuthService.firebase();
   // ignore: prefer_typing_uninitialized_variables
   var dbService;
@@ -374,30 +382,108 @@ class _RestaurantsListState extends State<RestaurantsList> {
   @override
   Widget build(BuildContext context) {
     restaurants = Provider.of<List<Restaurant>>(context);
+    final pageController = Provider.of<PillButtonPageTracker>(context);
+
     dbService = DatabaseService(uid: authService.currentUser!.uid);
+
     if (restaurants.length == 1 && restaurants[0].uid.isEmpty) {
-      // loading
+      print("First");
       return Scaffold(
-        appBar: AppBar(
-          title: const Text('Lista Kafica'),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.filter_list),
-              onPressed: () {
-                _showSortOptions(context, restaurants, true);
+        body: SafeArea(
+          child: NestedScrollView(
+            headerSliverBuilder:
+                (BuildContext context, bool innerBoxIsScrolled) {
+              return [
+                SliverAppBar(
+                  backgroundColor: Colors.grey[50],
+                  toolbarHeight: 180,
+                  floating: true,
+                  snap: true,
+                  flexibleSpace: Column(
+                    children: [
+                      const SizedBox(height: 20.0),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          SearchBox(
+                            withFilters: true,
+                            widthPercentage: 0.7,
+                            function: () {},
+                          ),
+                          const SizedBox(width: 15),
+                          InkWell(
+                            onTap: () {
+                              Navigator.of(context).pushNamed('/account');
+                            },
+                            child: Hero(
+                              flightShuttleBuilder: (
+                                flightContext,
+                                animation,
+                                flightDirection,
+                                fromHeroContext,
+                                toHeroContext,
+                              ) {
+                                switch (flightDirection) {
+                                  // when push to new page
+                                  case HeroFlightDirection.push:
+                                    return Material(
+                                      color: Colors.transparent,
+                                      child: ScaleTransition(
+                                        scale: animation.drive(
+                                          Tween<double>(begin: 0, end: 1).chain(
+                                            CurveTween(
+                                              curve: Curves.fastOutSlowIn,
+                                            ),
+                                          ),
+                                        ),
+                                        child: toHeroContext.widget,
+                                      ),
+                                    );
+
+                                  // when return from new page
+                                  case HeroFlightDirection.pop:
+                                    return Material(
+                                      color: Colors.transparent,
+                                      child: fromHeroContext.widget,
+                                    );
+                                }
+                              },
+                              tag: 'restaurant-settings-UserAvatar',
+                              child: const UserAvatar(),
+                            ),
+                          )
+                        ],
+                      ),
+                      const SizedBox(height: 20.0),
+                      PillButtons(
+                          pillKey: pillKey, pageController: pageController),
+                    ],
+                  ),
+                ),
+              ];
+            },
+            body: PageView(
+              controller: pageController.pageController,
+              onPageChanged: (int numPage) {
+                pageController.setCurrentPageDontNotifySelf(numPage);
               },
+              scrollDirection: Axis.horizontal,
+              children: [
+                FavouriteRestourantsWrapper(allRestaurants: restaurants),
+                AllRestaurantsWrapper(restaurants: restaurants),
+              ],
             ),
-            IconButton(
-              onPressed: () {},
-              icon: const Icon(Icons.person),
-            ),
-          ],
-        ),
-        body: const Center(
-          child: CircularProgressIndicator(),
+          ),
         ),
       );
-    } else if (restaurants.isEmpty && !isLoading) {
+
+      // u trenutku ucitavanja
+    }
+
+    // Ukoliko nije pronadjen nijedan restoran
+    else if (restaurants.isEmpty && !isLoading) {
+      print("Second");
+
       return Scaffold(
         appBar: AppBar(
           title: const Text('Lista Kafica'),
@@ -444,6 +530,10 @@ class _RestaurantsListState extends State<RestaurantsList> {
         ),
       );
     }
+
+    print("Third");
+
+    // lista sa restoranima
     return Scaffold(
       appBar: AppBar(
         title: const Text('Lista Kafica'),
