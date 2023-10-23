@@ -6,6 +6,7 @@ import 'package:cofify/screens/choose_city.dart';
 import 'package:cofify/screens/loadingScreen.dart';
 // import 'package:cofify/screens/home.dart';
 import 'package:cofify/screens/login_page.dart';
+import 'package:cofify/screens/register.dart';
 import 'package:cofify/screens/restaurants_list_page.dart';
 import 'package:cofify/screens/welecome_page.dart';
 import 'dart:developer';
@@ -38,7 +39,8 @@ class Wrapper extends StatelessWidget {
     if (user.uid == '') {
       log("ovde sam");
       // return const LoginScreen();
-      return const WelecomePage();
+      // return const WelecomePage();
+      return const RegisterView();
     } else {
       // if (user.isVerified) {
       //   //return const UserProfile();
